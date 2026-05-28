@@ -3,6 +3,9 @@ package com.samir.uniguide.service;
 import com.samir.uniguide.dto.request.LoginRequest;
 import com.samir.uniguide.dto.request.RegisterRequest;
 import com.samir.uniguide.dto.response.AuthResponse;
+import com.samir.uniguide.exception.ConflictException;
+import com.samir.uniguide.exception.InvalidTokenException;
+import com.samir.uniguide.exception.ResourceNotFoundException;
 import com.samir.uniguide.model.entity.RefreshToken;
 import com.samir.uniguide.model.entity.User;
 import com.samir.uniguide.model.enums.Role;
@@ -27,10 +30,10 @@ public class AuthService {
 
     public AuthResponse register(RegisterRequest request) {
         if(userRepository.existsByEmail(request.getEmail())) {
-            throw new RuntimeException("Email already exists");
+            throw new ConflictException("User with this email already exists");
         }
         if(userRepository.existsByUsername(request.getUsername())) {
-            throw new RuntimeException("Username already exists");
+            throw new ConflictException("User with this username already exists");
         }
 
         User user = User.builder()
@@ -66,10 +69,10 @@ public class AuthService {
         Optional<User> userOpt = request.getLogin().contains("@") ?
                 userRepository.findByEmail(request.getLogin()) : userRepository.findByUsername(request.getLogin());
 
-        User user = userOpt.orElseThrow(() -> new RuntimeException(("User not found")));
+        User user = userOpt.orElseThrow(() -> new ResourceNotFoundException("User not found with this login: " + request.getLogin()));
 
         if(!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-            throw new RuntimeException("Invalid password");
+            throw new InvalidTokenException("Invalid password");
         }
 
         refreshTokenRepository.findByUser(user).ifPresent(refreshTokenRepository::delete);
@@ -93,12 +96,12 @@ public class AuthService {
         Optional<RefreshToken> refreshTokenOpt = refreshTokenRepository.findByToken(refreshToken);
 
         if(refreshTokenOpt.isEmpty()) {
-            throw new RuntimeException("Invalid refresh token");
+            throw new InvalidTokenException("Invalid refresh token");
         }
 
         RefreshToken refreshTokenEntity = refreshTokenOpt.get();
         if(refreshTokenEntity.getExpirationDate().isBefore(LocalDateTime.now())) {
-            throw new RuntimeException("Refresh token expired");
+            throw new InvalidTokenException("Refresh token expired");
         }
 
         return AuthResponse.builder()

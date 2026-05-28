@@ -2,12 +2,15 @@ package com.samir.uniguide.service;
 
 import com.samir.uniguide.dto.request.GuideCreationRequest;
 import com.samir.uniguide.dto.response.GuideCreationResponse;
+import com.samir.uniguide.exception.ForbiddenException;
+import com.samir.uniguide.exception.ResourceNotFoundException;
 import com.samir.uniguide.model.entity.Guide;
 import com.samir.uniguide.model.entity.User;
 import com.samir.uniguide.repository.GuideRepository;
 import com.samir.uniguide.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
+import java.nio.file.AccessDeniedException;
 import java.util.List;
 
 @Service
@@ -21,7 +24,7 @@ public class GuideService {
     }
 
     public GuideCreationResponse createGuide(GuideCreationRequest request, String username) {
-        User user = userRepository.findByUsername(username).orElseThrow(() -> new RuntimeException("User not found"));
+        User user = userRepository.findByUsername(username).orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         Guide guide = Guide.builder()
                 .title(request.getTitle())
@@ -43,14 +46,14 @@ public class GuideService {
     }
 
     public GuideCreationResponse getGuideById(Long id) {
-        Guide guide = guideRepository.findById(id).orElseThrow(() -> new RuntimeException("Guide not found"));
+        Guide guide = guideRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Guide not found"));
         return toResponse(guide);
     }
 
-    public GuideCreationResponse updateGuide(Long id, GuideCreationRequest request, String username) {
-        Guide guide = guideRepository.findById(id).orElseThrow(() -> new RuntimeException("Guide not found"));
+    public GuideCreationResponse updateGuide(Long id, GuideCreationRequest request, String username)  {
+        Guide guide = guideRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Guide not found"));
         if(!guide.getAuthor().getUsername().equals(username)) {
-            throw new RuntimeException("Access denied: You are not the author of this guide");
+            throw new ForbiddenException("Access denied: You are not the author of this guide");
         }
 
         guide.setTitle(request.getTitle());
@@ -65,7 +68,7 @@ public class GuideService {
     public void deleteGuide(Long id,String username) {
         Guide guide = guideRepository.findById(id).orElseThrow(() -> new RuntimeException("Guide not found"));
         if(!guide.getAuthor().getUsername().equals(username)) {
-            throw new RuntimeException("Access denied: You are not the author of this guide");
+            throw new ForbiddenException("Access denied: You are not the author of this guide");
         }
         guideRepository.delete(guide);
     }
