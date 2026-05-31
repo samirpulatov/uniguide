@@ -1,6 +1,7 @@
 package com.samir.uniguide.model.entity;
 
 import com.samir.uniguide.model.enums.GuideCategory;
+import com.samir.uniguide.model.enums.GuideStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -41,4 +42,12 @@ public class Guide {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
+
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    @Builder.Default
+    private GuideStatus guideStatus = GuideStatus.PENDING;
+
+
+    private String rejectionReason;
 }

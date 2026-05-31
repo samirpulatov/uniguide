@@ -6,6 +6,7 @@ target/
 application-local.properties
 .env
 *.env
+*.md
 
 ### STS ###
 .apt_generated

@@ -11,7 +11,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
-import java.nio.file.AccessDeniedException;
 import java.util.List;
 
 @Tag(name = "Guides", description = "Create, get, update and delete guides")
@@ -27,7 +26,7 @@ public class GuideController {
     @Operation(summary = "Get all guides")
     @GetMapping
     public ResponseEntity<List<GuideCreationResponse>> getAllGuides() {
-        return ResponseEntity.ok(guideService.getAllGuides());
+        return ResponseEntity.ok(guideService.getAllApprovedGuides());
     }
 
     @Operation(summary = "Get a guide by ID")
