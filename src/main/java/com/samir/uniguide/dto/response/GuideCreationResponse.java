@@ -1,7 +1,9 @@
 package com.samir.uniguide.dto.response;
 
+import com.samir.uniguide.model.enums.City;
 import com.samir.uniguide.model.enums.GuideCategory;
 import com.samir.uniguide.model.enums.GuideStatus;
+import com.samir.uniguide.model.enums.University;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -17,6 +19,8 @@ public class GuideCreationResponse {
     private String content;
     private GuideCategory category;
     private String authorName;
+    private City city;
+    private University university;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private GuideStatus status;

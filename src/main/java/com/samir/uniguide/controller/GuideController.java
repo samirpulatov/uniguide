@@ -2,11 +2,15 @@ package com.samir.uniguide.controller;
 
 import com.samir.uniguide.dto.request.GuideCreationRequest;
 import com.samir.uniguide.dto.response.GuideCreationResponse;
+import com.samir.uniguide.model.enums.City;
+import com.samir.uniguide.model.enums.GuideCategory;
+import com.samir.uniguide.model.enums.University;
 import com.samir.uniguide.service.GuideService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import org.hibernate.id.GUIDGenerator;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -25,8 +29,12 @@ public class GuideController {
 
     @Operation(summary = "Get all guides")
     @GetMapping
-    public ResponseEntity<List<GuideCreationResponse>> getAllGuides() {
-        return ResponseEntity.ok(guideService.getAllApprovedGuides());
+    public ResponseEntity<List<GuideCreationResponse>> getAllGuides(
+            @RequestParam(required = false) City city,
+            @RequestParam(required = false)GuideCategory category,
+            @RequestParam(required = false) University university
+            ) {
+        return ResponseEntity.ok(guideService.getAllApprovedGuides(city, category, university));
     }
 
     @Operation(summary = "Get a guide by ID")

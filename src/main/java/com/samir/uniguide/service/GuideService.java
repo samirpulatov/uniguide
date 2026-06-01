@@ -8,9 +8,14 @@ import com.samir.uniguide.exception.ForbiddenException;
 import com.samir.uniguide.exception.ResourceNotFoundException;
 import com.samir.uniguide.model.entity.Guide;
 import com.samir.uniguide.model.entity.User;
+import com.samir.uniguide.model.enums.City;
+import com.samir.uniguide.model.enums.GuideCategory;
 import com.samir.uniguide.model.enums.GuideStatus;
+import com.samir.uniguide.model.enums.University;
 import com.samir.uniguide.repository.GuideRepository;
+import com.samir.uniguide.repository.GuideSpecification;
 import com.samir.uniguide.repository.UserRepository;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -33,6 +38,8 @@ public class GuideService {
                 .content(request.getContent())
                 .author(user)
                 .guideCategory(request.getGuideCategory())
+                .city(request.getCity())
+                .university(request.getUniversity())
                 .build();
 
         Guide savedGuide = guideRepository.save(guide);
@@ -40,10 +47,15 @@ public class GuideService {
 
     }
 
-    public List<GuideCreationResponse> getAllApprovedGuides() {
-        return guideRepository.findAll()
+    public List<GuideCreationResponse> getAllApprovedGuides(City city, GuideCategory category, University university) {
+        Specification<Guide> approvedSpec = Specification
+                .where(GuideSpecification.hasStatus(GuideStatus.APPROVED))
+                .and(GuideSpecification.hasCity(city))
+                .and(GuideSpecification.hasCategory(category))
+                .and(GuideSpecification.hasUniversity(university));
+
+        return guideRepository.findAll(approvedSpec)
                 .stream()
-                .filter(s -> s.getGuideStatus()==GuideStatus.APPROVED)
                 .map(this::toResponse)
                 .toList();
     }
@@ -69,6 +81,8 @@ public class GuideService {
         guide.setTitle(request.getTitle());
         guide.setContent(request.getContent());
         guide.setGuideCategory(request.getGuideCategory());
+        guide.setCity(request.getCity());
+        guide.setUniversity(request.getUniversity());
         guide.setGuideStatus(GuideStatus.PENDING);
 
         Guide savedGuide = guideRepository.save(guide);
@@ -117,6 +131,8 @@ public class GuideService {
                 .title(guide.getTitle())
                 .content(guide.getContent())
                 .category(guide.getGuideCategory())
+                .city(guide.getCity())
+                .university(guide.getUniversity())
                 .authorName(guide.getAuthor().getUsername())
                 .createdAt(guide.getCreatedAt())
                 .updatedAt(guide.getUpdatedAt())

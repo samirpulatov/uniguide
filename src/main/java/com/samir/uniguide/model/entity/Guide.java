@@ -1,7 +1,9 @@
 package com.samir.uniguide.model.entity;
 
+import com.samir.uniguide.model.enums.City;
 import com.samir.uniguide.model.enums.GuideCategory;
 import com.samir.uniguide.model.enums.GuideStatus;
+import com.samir.uniguide.model.enums.University;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -34,6 +36,12 @@ public class Guide {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private GuideCategory guideCategory;
+
+    @Enumerated(EnumType.STRING)
+    private City city;
+
+    @Enumerated(EnumType.STRING)
+    private University university;
 
     @Column(nullable = false)
     @CreationTimestamp

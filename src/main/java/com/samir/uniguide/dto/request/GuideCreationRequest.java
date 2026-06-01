@@ -1,6 +1,8 @@
 package com.samir.uniguide.dto.request;
 
+import com.samir.uniguide.model.enums.City;
 import com.samir.uniguide.model.enums.GuideCategory;
+import com.samir.uniguide.model.enums.University;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
@@ -16,4 +18,9 @@ public class GuideCreationRequest {
 
     @NotNull
     private GuideCategory guideCategory;
+
+    private City city;
+
+    private University university;
+
 }
