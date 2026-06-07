@@ -1,0 +1,341 @@
+/* Layout */
+
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.75rem;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+
+.navbar-brand {
+  font-weight: 700;
+  font-size: 1.3rem;
+  text-decoration: none;
+  color: var(--accent);
+  letter-spacing: -0.02em;
+}
+
+.navbar-links {
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
+}
+
+.navbar-links a {
+  color: var(--text);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.navbar-links a:hover {
+  color: var(--accent);
+}
+
+.navbar-links button {
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  border-radius: var(--radius);
+  padding: 0.4rem 0.9rem;
+  cursor: pointer;
+}
+
+.navbar-links button:hover {
+  border-color: var(--accent-border);
+  color: var(--accent);
+}
+
+.app-content {
+  max-width: 880px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 2rem 1.5rem 4rem;
+  flex: 1;
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+/* Status & messages */
+
+.status-message {
+  color: var(--text);
+  opacity: 0.65;
+}
+
+.form-error {
+  color: var(--danger);
+  background: var(--danger-bg);
+  border-radius: var(--radius);
+  padding: 0.6rem 0.9rem;
+  font-size: 0.92rem;
+}
+
+.form-success {
+  color: var(--success);
+  background: var(--success-bg);
+  border-radius: var(--radius);
+  padding: 0.6rem 0.9rem;
+  font-size: 0.92rem;
+}
+
+/* Forms & buttons */
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  max-width: 440px;
+}
+
+.form label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  font-weight: 500;
+  font-size: 0.92rem;
+  color: var(--text-h);
+}
+
+.form input,
+.form textarea,
+.form select,
+.filters select {
+  font: inherit;
+  padding: 0.55rem 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--text-h);
+}
+
+.form input:focus,
+.form textarea:focus,
+.form select:focus,
+.filters select:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-bg);
+}
+
+.form textarea {
+  resize: vertical;
+  font-family: var(--sans);
+}
+
+button[type='submit'],
+.button-link {
+  align-self: flex-start;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius);
+  padding: 0.6rem 1.25rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+}
+
+button[type='submit']:hover,
+.button-link:hover {
+  background: var(--accent-hover);
+}
+
+button[type='submit']:disabled {
+  background: var(--border);
+  color: var(--text);
+  cursor: not-allowed;
+}
+
+.auth-page {
+  max-width: 440px;
+}
+
+.auth-page p {
+  margin-top: 1rem;
+  font-size: 0.92rem;
+  color: var(--text);
+}
+
+/* Filters */
+
+.filters {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+  flex-wrap: wrap;
+}
+
+/* Guide cards */
+
+.guide-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.guide-card {
+  display: block;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.1rem 1.25rem;
+  text-decoration: none;
+  color: inherit;
+  box-shadow: var(--shadow);
+  transition: border-color 0.15s ease, transform 0.15s ease;
+}
+
+.guide-card:hover {
+  border-color: var(--accent-border);
+  transform: translateY(-1px);
+}
+
+.guide-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.guide-card-meta,
+.guide-card-author {
+  opacity: 0.65;
+  margin: 0.3rem 0 0;
+  font-size: 0.9rem;
+}
+
+/* Guide detail */
+
+.guide-detail-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.guide-content {
+  white-space: pre-wrap;
+  margin-top: 1.25rem;
+  line-height: 1.7;
+  color: var(--text-h);
+}
+
+.guide-content-preview {
+  white-space: pre-wrap;
+  opacity: 0.75;
+  max-height: 5.5rem;
+  overflow: hidden;
+  font-size: 0.92rem;
+  margin-top: 0.5rem;
+}
+
+.guide-actions {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+  align-items: center;
+}
+
+.guide-actions a {
+  font-weight: 600;
+}
+
+.guide-actions button {
+  border: 1px solid var(--danger);
+  background: transparent;
+  color: var(--danger);
+  border-radius: var(--radius);
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.guide-actions button:hover {
+  background: var(--danger-bg);
+}
+
+/* Admin moderation */
+
+.admin-guide-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  margin-bottom: 2rem;
+}
+
+.admin-guide-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.1rem 1.25rem;
+  box-shadow: var(--shadow);
+}
+
+.admin-guide-actions {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.admin-guide-actions input {
+  flex: 1;
+  min-width: 180px;
+  font: inherit;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.admin-guide-actions button {
+  border: none;
+  border-radius: var(--radius);
+  padding: 0.5rem 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.admin-guide-actions button:first-child {
+  background: var(--success-bg);
+  color: var(--success);
+}
+
+.admin-guide-actions button:last-child {
+  background: var(--danger-bg);
+  color: var(--danger);
+}
+
+/* Status badge */
+
+.status-badge {
+  display: inline-block;
+  padding: 0.2rem 0.7rem;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.status-badge--pending {
+  background: var(--warning-bg);
+  color: var(--warning);
+}
+
+.status-badge--approved {
+  background: var(--success-bg);
+  color: var(--success);
+}
+
+.status-badge--rejected {
+  background: var(--danger-bg);
+  color: var(--danger);
+}

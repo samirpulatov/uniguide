@@ -25,7 +25,7 @@ public class GuideSpecification {
 
     public static Specification<Guide> hasCategory(GuideCategory category) {
         return (root, query, cb) ->
-                category == null ? null : cb.equal(root.get("category"), category);
+                category == null ? null : cb.equal(root.get("guideCategory"), category);
     }
 
 
