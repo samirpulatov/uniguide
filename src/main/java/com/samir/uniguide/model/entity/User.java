@@ -1,9 +1,12 @@
 package com.samir.uniguide.model.entity;
 
+import com.samir.uniguide.model.enums.City;
 import com.samir.uniguide.model.enums.Role;
+import com.samir.uniguide.model.enums.University;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -64,9 +67,18 @@ public class User implements UserDetails {
     @Column(nullable = false)
     private Role role;
 
+    @Enumerated(EnumType.STRING)
+    private City city;
+
+    @Enumerated(EnumType.STRING)
+    private University university;
+
     @Column(nullable = false)
     @CreationTimestamp
     private LocalDateTime createdAt;
+
+    @UpdateTimestamp
+    private LocalDateTime updatedAt;
 
     @Column(nullable = false)
     private boolean enabled;

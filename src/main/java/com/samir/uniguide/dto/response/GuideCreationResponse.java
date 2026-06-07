@@ -1,5 +1,6 @@
 package com.samir.uniguide.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.samir.uniguide.model.enums.City;
 import com.samir.uniguide.model.enums.GuideCategory;
 import com.samir.uniguide.model.enums.GuideStatus;
@@ -13,6 +14,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @Builder
+@JsonPropertyOrder({"id", "title", "content", "category", "authorName", "city", "university", "createdAt", "updatedAt", "status", "rejectionReason"})
 public class GuideCreationResponse {
     private Long id;
     private String title;

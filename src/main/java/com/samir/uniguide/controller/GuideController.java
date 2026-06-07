@@ -37,6 +37,13 @@ public class GuideController {
         return ResponseEntity.ok(guideService.getAllApprovedGuides(city, category, university));
     }
 
+
+    @Operation(summary = "get current users guides", security = @SecurityRequirement(name = "bearerAuth"))
+    @GetMapping("/me")
+    public ResponseEntity<List<GuideCreationResponse>> getGuidesForCurrentUser(Authentication authentication) {
+        return ResponseEntity.ok(guideService.getMyGuides(authentication.getName()));
+    }
+
     @Operation(summary = "Get a guide by ID")
     @GetMapping("/{id}")
     public ResponseEntity<GuideCreationResponse> getGuideById(@PathVariable Long id) {

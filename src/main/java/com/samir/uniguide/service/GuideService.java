@@ -72,6 +72,13 @@ public class GuideService {
         return toResponse(guide);
     }
 
+
+    public List<GuideCreationResponse> getMyGuides(String username) {
+        User user = userRepository.findByUsername(username).orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        List<Guide> guides = guideRepository.findByAuthor(user);
+        return guides.stream().map(this::toResponse).toList();
+    }
+
     public GuideCreationResponse updateGuide(Long id, GuideCreationRequest request, String username)  {
         Guide guide = guideRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Guide not found"));
         if(!guide.getAuthor().getUsername().equals(username)) {
