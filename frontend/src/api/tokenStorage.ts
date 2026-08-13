@@ -1,0 +1,24 @@
+// Centralizes where JWT tokens live (localStorage) so the rest of the app
+// never touches the storage mechanism directly — swapping it out later means
+// changing only this file.
+const ACCESS_TOKEN_KEY = 'uniguide.accessToken';
+const REFRESH_TOKEN_KEY = 'uniguide.refreshToken';
+
+export const tokenStorage = {
+  getAccessToken: () => localStorage.getItem(ACCESS_TOKEN_KEY),
+  getRefreshToken: () => localStorage.getItem(REFRESH_TOKEN_KEY),
+
+  setTokens: (accessToken: string, refreshToken: string) => {
+    localStorage.setItem(ACCESS_TOKEN_KEY, accessToken);
+    localStorage.setItem(REFRESH_TOKEN_KEY, refreshToken);
+  },
+
+  setAccessToken: (accessToken: string) => {
+    localStorage.setItem(ACCESS_TOKEN_KEY, accessToken);
+  },
+
+  clear: () => {
+    localStorage.removeItem(ACCESS_TOKEN_KEY);
+    localStorage.removeItem(REFRESH_TOKEN_KEY);
+  },
+};
