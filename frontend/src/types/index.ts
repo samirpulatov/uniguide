@@ -8,6 +8,18 @@ export type GuideCategory =
   | 'ENTERTAINMENT'
   | 'TRAVEL'
   | 'HEALTHCARE'
+  | 'HOUSING'
+  | 'OTHER';
+
+// Kept separate from GuideCategory on the backend on purpose (the two may diverge later)
+export type ForumCategory =
+  | 'DAILY_LIFE'
+  | 'STUDIES'
+  | 'BUREAUCRACY'
+  | 'ENTERTAINMENT'
+  | 'TRAVEL'
+  | 'HEALTHCARE'
+  | 'HOUSING'
   | 'OTHER';
 
 export type GuideStatus = 'PENDING' | 'APPROVED' | 'REJECTED';
@@ -79,6 +91,11 @@ export interface UpdateUserResponse {
   accessToken: string;
 }
 
+export interface ChangePasswordRequest {
+  currentPassword: string;
+  newPassword: string;
+}
+
 // ---- Guides ----
 export interface GuideCreationRequest {
   title: string;
@@ -105,6 +122,46 @@ export interface GuideCreationResponse {
 export interface GuideReviewRequest {
   action: 'APPROVED' | 'REJECTED';
   rejectionReason?: string;
+}
+
+// ---- Forum ----
+export interface ForumThreadRequest {
+  title: string;
+  content: string;
+  forumCategory: ForumCategory | null;
+  city: City | null;
+  university: University | null;
+}
+
+export interface ForumReplyResponse {
+  id: number;
+  authorName: string;
+  content: string;
+  createdAt: string;
+  updatedAt: string | null;
+  // soft-deleted: content is only the tombstone text, children are still kept in the tree
+  deleted: boolean;
+  replies: ForumReplyResponse[] | null;
+}
+
+export interface ForumThreadResponse {
+  id: number;
+  authorName: string;
+  title: string;
+  content: string;
+  forumCategory: ForumCategory | null;
+  city: City | null;
+  university: University | null;
+  createdAt: string;
+  updatedAt: string | null;
+  // only filled by GET /forum/threads/{id}; null in list responses
+  replies: ForumReplyResponse[] | null;
+}
+
+export interface ForumReplyRequest {
+  content: string;
+  // null/omitted = top-level reply to the thread
+  parentReplyId?: number | null;
 }
 
 // ---- Errors ----
