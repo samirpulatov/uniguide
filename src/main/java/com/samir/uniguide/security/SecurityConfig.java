@@ -17,6 +17,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+// route-level authorization rules; sessions are stateless since auth is JWT-based, not cookie/session-based
 @Configuration
 @EnableWebSecurity
 @AllArgsConstructor
@@ -44,9 +45,14 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/**","/swagger-ui/**","/v3/api-docs/**").permitAll()
+                        // Spring Security evaluates matchers in order, so this authenticated() carve-out
+                        // must come before the permitAll() below, otherwise /guides/me would be public
+                        // and Authentication would be null, NPE-ing on authentication.getName()
                         .requestMatchers(HttpMethod.GET, "/guides/me").authenticated()
                         .requestMatchers(HttpMethod.GET, "/guides", "/guides/**").permitAll()
                         .requestMatchers("/admin/**").hasAuthority("ROLE_ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/forum/threads/me").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/forum/threads", "/forum/threads/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .exceptionHandling(ex -> ex
