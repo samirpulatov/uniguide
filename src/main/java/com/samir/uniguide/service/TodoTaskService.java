@@ -10,7 +10,6 @@ import com.samir.uniguide.model.entity.TodoTask;
 import com.samir.uniguide.model.entity.User;
 import com.samir.uniguide.repository.TodoTaskRepository;
 import com.samir.uniguide.repository.UserRepository;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 
@@ -20,8 +19,8 @@ import java.util.List;
 /**
  * Personal to-do list for the dashboard.
  * Each user has exactly one list (there is no TodoList entity), so every method
- * works only with the tasks of the current user. The user always comes from the JWT
- * via {@link Authentication}, never from the URL or the request body.
+ * works only with the tasks of the current user. The username always comes from the JWT
+ * (the controller passes {@code authentication.getName()}), never from the URL or the request body.
  */
 @Service
 public class TodoTaskService {
@@ -38,12 +37,12 @@ public class TodoTaskService {
      * {@code completed} starts as false and {@code createdAt} is set by Hibernate on insert.
      *
      * @param request        task text (already validated: not blank, max 100 chars)
-     * @param authentication current user from the JWT
+     * @param username       current user from the JWT
      * @return the saved task
      * @throws ResourceNotFoundException if the user from the token no longer exists
      */
-    public TodoTaskResponse createTodoTask(TodoTaskCreationRequest request, Authentication authentication) {
-        User author  = userRepository.findByUsername(authentication.getName()).orElseThrow(() -> new ResourceNotFoundException("User not found"));
+    public TodoTaskResponse createTodoTask(TodoTaskCreationRequest request, String username) {
+        User author = findUser(username);
         TodoTask todoTask = TodoTask.builder()
                 .content(request.getContent())
                 .author(author)
@@ -58,13 +57,12 @@ public class TodoTaskService {
      * Returns all tasks of the current user, oldest first.
      * The database does the sorting, so new tasks appear at the bottom of the list.
      *
-     * @param authentication current user from the JWT
+     * @param username       current user from the JWT
      * @return the user's tasks; an empty list if there are none
      * @throws ResourceNotFoundException if the user from the token no longer exists
      */
-    public List<TodoTaskResponse>
-    getTodoTasksByAuthor(Authentication authentication) {
-        User author = userRepository.findByUsername(authentication.getName()).orElseThrow(() -> new ResourceNotFoundException("User not found"));
+    public List<TodoTaskResponse> getTodoTasksByAuthor(String username) {
+        User author = findUser(username);
         return todoTaskRepository.findByAuthorOrderByCreatedAtAsc(author).stream().map(TodoTaskService::toTodoTaskResponse).toList();
     }
 
@@ -75,14 +73,14 @@ public class TodoTaskService {
      *
      * @param id             id of the task from the URL
      * @param request        fields to change; each one may be null
-     * @param authentication current user from the JWT
+     * @param username       current user from the JWT
      * @return the task after the update
      * @throws ResourceNotFoundException if the task does not exist
      * @throws ForbiddenException        if the task belongs to another user
      * @throws BadRequestException       if content is sent but contains only whitespace
      */
-    public TodoTaskResponse updateTodoTask(Long id, UpdateTodoTaskRequest request, Authentication authentication) {
-        TodoTask todoTask = getOwnedTodoTask(id, authentication);
+    public TodoTaskResponse updateTodoTask(Long id, UpdateTodoTaskRequest request, String username) {
+        TodoTask todoTask = getOwnedTodoTask(id, username);
         // null check first: a toggle request has no content, and isBlank() on null would throw NPE
         if(request.getContent()!=null) {
             // @Size in the DTO does not catch "   ", so a blank text is rejected here with 400
@@ -105,12 +103,12 @@ public class TodoTaskService {
      * it does not have to be completed first (e.g. a task that is no longer needed).
      *
      * @param id             id of the task from the URL
-     * @param authentication current user from the JWT
+     * @param username       current user from the JWT
      * @throws ResourceNotFoundException if the task does not exist
      * @throws ForbiddenException        if the task belongs to another user
      */
-    public void deleteTodoTask(Long id, Authentication authentication) {
-        TodoTask todoTask = getOwnedTodoTask(id, authentication);
+    public void deleteTodoTask(Long id, String username) {
+        TodoTask todoTask = getOwnedTodoTask(id, username);
 
         todoTaskRepository.delete(todoTask);
 
@@ -119,8 +117,8 @@ public class TodoTaskService {
 
     // loads a task and makes sure it belongs to the current user; shared by update and delete,
     // so the ownership check lives in one place. Without it anyone could change a task just by guessing its id
-    private TodoTask getOwnedTodoTask(Long id, Authentication authentication) {
-        User author = userRepository.findByUsername(authentication.getName()).orElseThrow(() -> new ResourceNotFoundException("User not found"));
+    private TodoTask getOwnedTodoTask(Long id, String username) {
+        User author = findUser(username);
         // load the task first: the real owner is known only from the DB, never trust the client for it
         TodoTask todoTask = todoTaskRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("TodoTask not found"));
         // author is LAZY, but getId() on the proxy does not trigger an extra query
@@ -129,6 +127,12 @@ public class TodoTaskService {
         }
 
         return todoTask;
+    }
+
+
+    // the user from the token; shared by every method, so the lookup and its error live in one place
+    private User findUser(String username) {
+        return userRepository.findByUsername(username).orElseThrow(() -> new ResourceNotFoundException("User not found"));
     }
 
 

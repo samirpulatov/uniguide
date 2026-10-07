@@ -53,6 +53,7 @@ public class SecurityConfig {
                         .requestMatchers("/admin/**").hasAuthority("ROLE_ADMIN")
                         .requestMatchers(HttpMethod.GET, "/forum/threads/me").authenticated()
                         .requestMatchers(HttpMethod.GET, "/forum/threads", "/forum/threads/**").permitAll()
+                        .requestMatchers("/todos", "/todos/**").authenticated()
                         .anyRequest().authenticated()
                 )
                 .exceptionHandling(ex -> ex
