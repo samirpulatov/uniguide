@@ -22,7 +22,18 @@ type AuthCardProps = {
 export function AuthCard({ title, subtitle, helper, children }: AuthCardProps) {
   return (
     <div className="auth-shell">
+      {/* full-viewport photo behind everything, toned down to the night palette in CSS */}
+      <div className="auth-bg" aria-hidden="true" />
       <PageDecor />
+      <aside className="auth-intro">
+        <h2 className="auth-intro-title">
+          Your Study <span className="text-accent">Companion</span>
+        </h2>
+        <p className="auth-intro-text">
+          Find guides, connect with students and make the most of your university journey.
+        </p>
+        <span className="accent-line auth-intro-line" aria-hidden="true" />
+      </aside>
       <section className="glass-card auth-card">
         <span className="accent-line" aria-hidden="true" />
         <h1 className="auth-title">{title}</h1>

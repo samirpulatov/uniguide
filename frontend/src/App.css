@@ -99,6 +99,9 @@
 
 .app-content {
   position: relative;
+  /* own stacking context: fixed background layers with a negative z-index (.page-decor, .auth-bg)
+     are painted above the body background instead of disappearing behind it */
+  isolation: isolate;
   padding: 2rem 1.5rem 4rem;
   flex: 1;
 }
@@ -379,10 +382,75 @@ button[type='submit']:disabled {
 /* Auth (Log in / Register) */
 
 .auth-shell {
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  justify-items: center;
+  align-items: center;
+  gap: clamp(2rem, 5vw, 5rem);
+  width: 100%;
+  max-width: 1180px;
+  margin: 0 auto;
   padding-top: clamp(0.5rem, 5vh, 3.5rem);
+}
+
+/* Photo background: darkened and tinted indigo so the glass card stays readable.
+   The left side is darker for the intro text, the bottom fades into the page colour. */
+.auth-bg {
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  pointer-events: none;
+  background-image:
+    linear-gradient(180deg, rgba(15, 13, 34, 0.35) 0%, rgba(15, 13, 34, 0) 40%, rgba(15, 13, 34, 0.7) 100%),
+    linear-gradient(90deg, rgba(15, 13, 34, 0.88) 0%, rgba(15, 13, 34, 0.62) 30%, rgba(21, 19, 43, 0.25) 55%, rgba(21, 19, 43, 0.15) 75%, rgba(15, 13, 34, 0.5) 100%),
+    linear-gradient(rgba(52, 38, 150, 0.3), rgba(52, 38, 150, 0.3)),
+    url('./assets/auth-bg.webp');
+  background-size: cover;
+  background-position: center 40%;
+  filter: saturate(0.85);
+}
+
+.auth-intro {
+  display: none;
+  justify-self: start;
+  max-width: 24rem;
+}
+
+.auth-intro-title {
+  font-size: clamp(2.6rem, 4.2vw, 3.4rem);
+  font-weight: 600;
+  line-height: 1.08;
+  margin: 0 0 1.25rem;
+  text-shadow: 0 2px 24px rgba(5, 3, 20, 0.6);
+}
+
+.text-accent {
+  color: var(--accent);
+}
+
+.auth-intro-text {
+  color: #d9d4f5;
+  font-size: 1.15rem;
+  line-height: 1.6;
+  margin: 0;
+  text-shadow: 0 1px 12px rgba(5, 3, 20, 0.7);
+}
+
+.auth-intro-line {
+  width: 72px;
+  margin: 2rem 0 0;
+}
+
+/* Two columns on wide screens: intro on the left, card on the right */
+@media (min-width: 1000px) {
+  .auth-shell {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 620px);
+    padding-top: clamp(1rem, 8vh, 5rem);
+  }
+
+  .auth-intro {
+    display: block;
+  }
 }
 
 .auth-card {
