@@ -2,6 +2,7 @@ import { useState, type FormEvent } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { extractErrorMessage } from '../api/errors';
+import { AuthCard, IconInput, PasswordInput, UserIcon } from '../components/AuthCard';
 
 export function LoginPage() {
   const { login } = useAuth();
@@ -29,21 +30,37 @@ export function LoginPage() {
   };
 
   return (
-    <div className="auth-page">
-      <h1>Log in</h1>
-      <form onSubmit={handleSubmit} className="form">
+    <AuthCard
+      title="Log in"
+      subtitle="Welcome back to UniGuide"
+      helper="Log in to access guides, join the community and more."
+    >
+      <form onSubmit={handleSubmit} className="form auth-form">
         <label>
           Username or email
-          <input value={loginField} onChange={(e) => setLoginField(e.target.value)} required />
+          <IconInput
+            icon={<UserIcon />}
+            value={loginField}
+            onChange={(e) => setLoginField(e.target.value)}
+            placeholder="Enter your username or email"
+            autoComplete="username"
+            required
+          />
         </label>
         <label>
           Password
-          <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
+          <PasswordInput
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="Enter your password"
+            autoComplete="current-password"
+            required
+          />
         </label>
         {error && <p className="form-error">{error}</p>}
         <button type="submit" disabled={isSubmitting}>{isSubmitting ? 'Logging in...' : 'Log in'}</button>
       </form>
-      <p>No account yet? <Link to="/register">Register</Link></p>
-    </div>
+      <p className="auth-switch">No account yet? <Link to="/register">Register</Link></p>
+    </AuthCard>
   );
 }

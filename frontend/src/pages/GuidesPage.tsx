@@ -1,11 +1,15 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { guidesApi, type GuideFilters } from '../api/guides';
 import { extractErrorMessage } from '../api/errors';
 import { GuideCard } from '../components/GuideCard';
+import { PageDecor } from '../components/AuthCard';
+import { useAuth } from '../context/AuthContext';
 import { CITIES, GUIDE_CATEGORIES, formatEnumLabel, universitiesForCity } from '../constants/enumOptions';
 import type { City, GuideCategory, GuideCreationResponse, University } from '../types';
 
 export function GuidesPage() {
+  const { user } = useAuth();
   const [filters, setFilters] = useState<GuideFilters>({});
   const [guides, setGuides] = useState<GuideCreationResponse[]>([]);
   const [error, setError] = useState<string | null>(null);
@@ -42,7 +46,26 @@ export function GuidesPage() {
 
   return (
     <div className="page">
-      <h1>Guides</h1>
+      <PageDecor />
+      <section className="hero">
+        <span className="accent-line" aria-hidden="true" />
+        <h1 className="hero-title">Find your way as an international student</h1>
+        <p className="hero-subtitle">
+          Practical guides written by students — from bureaucracy and housing to daily life and studies.
+        </p>
+        <p className="hero-helper">Browse by city, university or category, and ask the community when you get stuck.</p>
+        <div className="hero-actions">
+          <a href="#guides" className="button-primary">Browse guides</a>
+          <Link to="/forum" className="button-ghost">Community</Link>
+          {user ? (
+            <Link to="/guides/new" className="button-ghost">Write a guide</Link>
+          ) : (
+            <Link to="/register" className="button-ghost">Register</Link>
+          )}
+        </div>
+      </section>
+
+      <h2 id="guides" className="section-title">Guides</h2>
       <div className="filters">
         <select value={filters.city ?? ''} onChange={(e) => handleCityChange(e.target.value as City | '')}>
           <option value="">All cities</option>
