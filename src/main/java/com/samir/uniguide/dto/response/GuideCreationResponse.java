@@ -15,6 +15,7 @@ import java.time.LocalDateTime;
 @Setter
 @Builder
 @JsonPropertyOrder({"id", "title", "content", "category", "authorName", "city", "university", "createdAt", "updatedAt", "status", "rejectionReason"})
+// response shape for guide create/update/list/get endpoints
 public class GuideCreationResponse {
     private Long id;
     private String title;
@@ -26,6 +27,7 @@ public class GuideCreationResponse {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private GuideStatus status;
+    // only set when status is REJECTED
     private String rejectionReason;
 
 }

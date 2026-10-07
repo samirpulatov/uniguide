@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+// GET endpoints are public except /me, which SecurityConfig carves out as authenticated() before the
+// permitAll() rule so authentication.getName() below is never called on a null Authentication
 @Tag(name = "Guides", description = "Create, get, update and delete guides")
 @RestController
 @RequestMapping("/guides")

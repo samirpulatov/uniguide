@@ -15,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+// no /users/{id} endpoint exists — users can only view/edit their own profile, resolved from the JWT subject
 @Tag(name = "User", description = "The User API")
 @RestController
 @RequestMapping("/users")

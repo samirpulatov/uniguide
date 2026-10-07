@@ -13,6 +13,8 @@ import tools.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.time.LocalDateTime;
 
+// handles 403s for authenticated-but-wrong-role requests; runs at the filter level, so it bypasses
+// GlobalExceptionHandler and has to build the ErrorResponse body itself
 @Component
 public class CustomAccessDeniedHandler implements AccessDeniedHandler {
     private final ObjectMapper objectMapper;

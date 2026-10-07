@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+// guide CRUD plus the moderation flow; public GET /guides only ever returns APPROVED guides
 @Service
 public class GuideService {
     private final GuideRepository guideRepository;
@@ -90,6 +91,7 @@ public class GuideService {
         guide.setGuideCategory(request.getGuideCategory());
         guide.setCity(request.getCity());
         guide.setUniversity(request.getUniversity());
+        // any edit sends the guide back through moderation, even if it was already APPROVED
         guide.setGuideStatus(GuideStatus.PENDING);
 
         Guide savedGuide = guideRepository.save(guide);
@@ -103,8 +105,10 @@ public class GuideService {
         if(request.getAction()==GuideStatus.APPROVED) {
             guide.setGuideStatus(GuideStatus.APPROVED);
             guide.setRejectionReason(null);
-        } else if(request.getAction()==GuideStatus.REJECTED) {
-            if(request.getRejectionReason()==null || request.getRejectionReason().isBlank()) {
+            }
+        else if(request.getAction()==GuideStatus.REJECTED) {
+                // rejectionReason is only mandatory for this action, so it can't be a @NotBlank on the DTO itself
+                if(request.getRejectionReason()==null || request.getRejectionReason().isBlank()) {
                 throw new BadRequestException("Rejection reason is required");
             }
             guide.setGuideStatus(GuideStatus.REJECTED);
@@ -127,8 +131,6 @@ public class GuideService {
         }
         guideRepository.delete(guide);
     }
-
-
 
 
 

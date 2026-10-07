@@ -15,6 +15,8 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
+// runs once per request, validates the Bearer token and populates SecurityContextHolder;
+// registered before UsernamePasswordAuthenticationFilter in SecurityConfig
 @Component
 @RequiredArgsConstructor
 public class JwtFilter extends OncePerRequestFilter {
@@ -37,6 +39,8 @@ public class JwtFilter extends OncePerRequestFilter {
                 SecurityContextHolder.getContext().setAuthentication(authenticationToken);
             }
         } catch (Exception ignored) {
+            // any failure (expired token, unknown username after a username change, etc.) just leaves the
+            // request unauthenticated — CustomAuthenticationEntryPoint turns that into a 401 downstream
         }
 
         filterChain.doFilter(request, response);

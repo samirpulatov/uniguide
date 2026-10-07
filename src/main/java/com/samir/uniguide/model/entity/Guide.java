@@ -17,6 +17,7 @@ import java.time.LocalDateTime;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+// a user-submitted guide (housing, visa, enrollment, etc.); goes through admin moderation before it's public
 @Table(name = "guides")
 public class Guide {
     @Id
@@ -37,6 +38,7 @@ public class Guide {
     @Column(nullable = false)
     private GuideCategory guideCategory;
 
+    // both optional: general guides (e.g. how to open a bank account) have neither
     @Enumerated(EnumType.STRING)
     private City city;
 
@@ -51,11 +53,12 @@ public class Guide {
     private LocalDateTime updatedAt;
 
 
+    // PENDING on create and on every update, until an admin approves/rejects it again
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     @Builder.Default
     private GuideStatus guideStatus = GuideStatus.PENDING;
 
-
+    // only set when guideStatus is REJECTED
     private String rejectionReason;
 }

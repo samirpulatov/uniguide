@@ -8,6 +8,8 @@ import io.swagger.v3.oas.models.info.Info;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+// exposes Swagger UI at /swagger-ui/index.html; @SecurityScheme registers the "bearerAuth" scheme
+// referenced by controllers' @SecurityRequirement(name = "bearerAuth") annotations
 @Configuration
 @SecurityScheme(
         name = "bearerAuth",

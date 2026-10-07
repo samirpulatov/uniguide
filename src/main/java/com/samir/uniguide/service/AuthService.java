@@ -19,6 +19,7 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
+// register/login/refresh; issues a JWT access token plus a DB-backed refresh token per user
 @Service
 @RequiredArgsConstructor
 public class AuthService {
@@ -66,6 +67,7 @@ public class AuthService {
     }
 
     public AuthResponse login(LoginRequest request) {
+        // "@" in the login field means it's an email, otherwise treat it as a username
         Optional<User> userOpt = request.getLogin().contains("@") ?
                 userRepository.findByEmail(request.getLogin()) : userRepository.findByUsername(request.getLogin());
 
@@ -75,6 +77,7 @@ public class AuthService {
             throw new InvalidTokenException("Invalid password");
         }
 
+        // only one refresh token per user; the old one is invalidated by a fresh login
         refreshTokenRepository.findByUser(user).ifPresent(refreshTokenRepository::delete);
 
         RefreshToken refreshToken = RefreshToken.builder()
@@ -104,6 +107,7 @@ public class AuthService {
             throw new InvalidTokenException("Refresh token expired");
         }
 
+        // refresh token itself is not rotated here — only a new access token is issued
         return AuthResponse.builder()
                 .accessToken(jwtService.generateToken(refreshTokenEntity.getUser().getUsername()))
                 .refreshToken(refreshTokenEntity.getToken())

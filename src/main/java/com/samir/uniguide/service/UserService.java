@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+// profile read/update and password change
 @Service
 public class UserService {
     private final UserRepository userRepository;
@@ -41,6 +42,8 @@ public class UserService {
 
     public UpdateUserResponse updateUser(String currentUsername, UpdateUserRequest request) {
         User user = userRepository.findByUsername(currentUsername).orElseThrow(()-> new ResourceNotFoundException("User not found"));
+        // only check for conflicts when the value actually changes, otherwise saving your own unchanged
+        // data would incorrectly throw ConflictException against your own existing row
         if(!user.getUsername().equals(request.getUsername()) && userRepository.existsByUsername(request.getUsername())) {
             throw new ConflictException("User with this username already exists");
         }
@@ -56,6 +59,10 @@ public class UserService {
         user.setUniversity(request.getUniversity());
         User savedUser = userRepository.save(user);
 
+        // username is the JWT subject, so if it changed the old access token is now orphaned
+        // (JwtFilter's loadUserByUsername would fail and silently leave the request unauthenticated);
+        // re-issuing here lets the client swap the token in immediately. Refresh token stays valid
+        // since RefreshToken links to User by user_id, not username
         String accessToken = jwtService.generateToken(savedUser.getUsername());
 
         return toUpdateUserResponse(savedUser,accessToken);
@@ -70,6 +77,7 @@ public class UserService {
         user.setPassword(passwordEncoder.encode(request.getNewPassword()));
         userRepository.save(user);
 
+        // rotate the refresh token too — a hijacked refresh token shouldn't survive a password change
         refreshTokenRepository.findByUser((user)).ifPresent(refreshTokenRepository::delete);
 
         RefreshToken refreshToken = RefreshToken.builder()

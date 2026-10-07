@@ -12,6 +12,9 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import java.time.LocalDateTime;
 import java.util.stream.Collectors;
 
+// central handler mapping custom exceptions (and validation errors) to a consistent ErrorResponse body;
+// Spring Security errors bypass Spring MVC and are handled separately by the CustomAuthenticationEntryPoint
+// and CustomAccessDeniedHandler in the security package
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 

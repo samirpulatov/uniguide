@@ -4,7 +4,10 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 
+
+// body for PUT /users/me/password
 @Getter
+
 public class ChangePasswordRequest {
     @NotBlank
     @Size(min = 8)
