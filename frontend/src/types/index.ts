@@ -164,6 +164,24 @@ export interface ForumReplyRequest {
   parentReplyId?: number | null;
 }
 
+// ---- Todo tasks ----
+export interface TodoTaskCreationRequest {
+  content: string;
+}
+
+// PATCH: send only the fields to change — omitted ones stay as they are
+export interface UpdateTodoTaskRequest {
+  content?: string;
+  completed?: boolean;
+}
+
+export interface TodoTaskResponse {
+  id: number;
+  content: string;
+  completed: boolean;
+  createdAt: string;
+}
+
 // ---- Errors ----
 export interface ErrorResponse {
   status: number;

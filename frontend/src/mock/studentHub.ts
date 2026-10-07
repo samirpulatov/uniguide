@@ -1,24 +1,7 @@
-// Demo data for the onboarding/dashboard/documents/housing/courses/forum screens.
+// Demo data for the onboarding/documents/housing/courses/forum screens.
 // These screens have no backend yet — everything here is local/mock state,
 // ported from the UniGuide.dc.html design mockup. Not part of the real API
 // surface (see ../types/index.ts for that).
-
-export interface DashboardTask {
-  id: number;
-  title: string;
-  category: string;
-  due: string;
-  done: boolean;
-}
-
-export const dashboardTasks: DashboardTask[] = [
-  { id: 1, title: 'Register your address (Anmeldung)', category: 'Visa', due: 'in 3 days', done: false },
-  { id: 2, title: 'Confirm blocked account setup', category: 'Visa', due: 'in 5 days', done: true },
-  { id: 3, title: 'Submit health insurance certificate', category: 'Enrollment', due: 'in 1 week', done: false },
-  { id: 4, title: 'Upload residence permit application', category: 'Visa', due: 'in 2 weeks', done: false },
-  { id: 5, title: 'Confirm course registration', category: 'Courses', due: 'in 10 days', done: true },
-  { id: 6, title: 'Join welcome week orientation', category: 'Community', due: 'tomorrow', done: false },
-];
 
 export type DocStatus = 'done' | 'progress' | 'todo';
 
