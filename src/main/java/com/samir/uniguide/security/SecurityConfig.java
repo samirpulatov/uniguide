@@ -54,6 +54,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/forum/threads/me").authenticated()
                         .requestMatchers(HttpMethod.GET, "/forum/threads", "/forum/threads/**").permitAll()
                         .requestMatchers("/todos", "/todos/**").authenticated()
+                        .requestMatchers("/housing", "/housing/**").authenticated()
                         .anyRequest().authenticated()
                 )
                 .exceptionHandling(ex -> ex
