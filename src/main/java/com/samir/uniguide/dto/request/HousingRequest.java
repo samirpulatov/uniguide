@@ -9,6 +9,11 @@ import lombok.Data;
 
 import java.math.BigDecimal;
 
+/**
+ * Body of POST /housing and PUT /housing/{id}. One DTO for both, because PUT replaces
+ * the whole listing. {@code @Digits(8, 2)} matches the {@code NUMERIC(10,2)} columns,
+ * so too large values give 400 instead of a database error.
+ */
 @Data
 public class HousingRequest {
     @NotNull
@@ -40,6 +45,7 @@ public class HousingRequest {
     @NotNull
     private City city;
 
+    // German postcodes have exactly 5 digits; a String, because they can start with 0
     @NotBlank
     @Pattern(regexp = "\\d{5}")
     private String postCode;

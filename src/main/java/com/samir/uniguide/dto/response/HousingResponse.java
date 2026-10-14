@@ -10,6 +10,10 @@ import lombok.Setter;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
+/**
+ * A housing listing as sent to the client, used for both the list and the detail view.
+ * The author is only a username ({@code authorName}), the {@code User} entity is never exposed.
+ */
 @Getter
 @Setter
 @Builder

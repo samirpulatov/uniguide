@@ -14,6 +14,11 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+/**
+ * REST endpoints for housing listings. Every endpoint requires login (see SecurityConfig).
+ * The current user is taken from {@link Authentication}, i.e. from the JWT, never from the URL.
+ * Business rules (ownership, 403/404) live in {@link HousingService}.
+ */
 @Tag(name = "Housing", description = "Create, update, and delete housings")
 @RestController
 @RequestMapping("/housing")
@@ -42,6 +47,7 @@ public class HousingController {
         return  ResponseEntity.ok(housingService.getHousingById(id));
     }
 
+    // "/me" is matched before "/{id}", because Spring prefers literal paths over path variables
     @Operation(summary = "Get housings", security = @SecurityRequirement(name = "bearerAuth"))
     @GetMapping("/me")
     public ResponseEntity<List<HousingResponse>> getMyHousings(Authentication authentication) {
@@ -49,6 +55,7 @@ public class HousingController {
     }
 
     @Operation(summary = "Get all housings", security = @SecurityRequirement(name = "bearerAuth"))
+    // @ModelAttribute binds query params (?city=...&maxWarmRent=...) to HousingFilter; @Valid checks them
     @GetMapping
     public ResponseEntity<List<HousingResponse>> getAllHousings(@ModelAttribute @Valid HousingFilter filter, Authentication authentication) {
         return ResponseEntity.ok(housingService.getAllHousings(filter));

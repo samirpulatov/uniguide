@@ -8,6 +8,11 @@ import lombok.Setter;
 
 import java.math.BigDecimal;
 
+/**
+ * Query parameters of GET /housing, bound with {@code @ModelAttribute}. All fields are optional;
+ * a missing field means "do not filter by it". Rent bounds are inclusive,
+ * {@code minArea} is inclusive and {@code maxArea} is exclusive (see {@code HousingSpecification}).
+ */
 @Setter
 @Getter
 public class HousingFilter {

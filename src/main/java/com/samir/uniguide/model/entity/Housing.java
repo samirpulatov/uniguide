@@ -10,6 +10,10 @@ import org.hibernate.annotations.UpdateTimestamp;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
+/**
+ * A housing listing created by a user: a WG room, an apartment or a dorm room.
+ * Money and area use {@code BigDecimal} / {@code NUMERIC(10,2)} to avoid rounding errors of double.
+ */
 @Entity
 @Table(name = "housing")
 @Getter
@@ -29,15 +33,19 @@ public class Housing {
     @Column(nullable = false)
     private String title;
 
+    // Kaltmiete: rent without heating and utilities
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal coldRent;
 
+    // Warmmiete: what the tenant really pays per month; the price filter uses this field
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal warmRent;
 
+    // in square meters
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal area;
 
+    // optional, not every listing asks for a deposit (Kaution)
     @Column(precision = 10, scale = 2)
     private BigDecimal deposit;
 
@@ -61,6 +69,7 @@ public class Housing {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
+    // LAZY: lists load authors explicitly with @EntityGraph (see HousingRepository) to avoid N+1
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "author_id",nullable = false)
     private User author;
