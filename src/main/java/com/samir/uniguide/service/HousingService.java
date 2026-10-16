@@ -12,7 +12,7 @@ import com.samir.uniguide.repository.HousingSpecification;
 import com.samir.uniguide.repository.UserRepository;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
-
+import org.springframework.transaction.support.TransactionTemplate;
 import java.util.List;
 
 
@@ -27,10 +27,14 @@ import java.util.List;
 public class HousingService {
     private final UserRepository userRepository;
     private final HousingRepository housingRepository;
+    private final HousingPhotoService housingPhotoService;
+    private final TransactionTemplate transactionTemplate;
 
-    public HousingService(UserRepository userRepository, HousingRepository housingRepository) {
+    public HousingService(UserRepository userRepository, HousingRepository housingRepository, HousingPhotoService housingPhotoService, TransactionTemplate transactionTemplate) {
         this.userRepository = userRepository;
         this.housingRepository = housingRepository;
+        this.housingPhotoService = housingPhotoService;
+        this.transactionTemplate = transactionTemplate;
     }
 
 
@@ -150,7 +154,11 @@ public class HousingService {
     }
 
     /**
-     * Deletes an own listing.
+     * Deletes an own listing together with all its photos.
+     * Photo rows and the listing row are deleted in one transaction, so either both are gone
+     * or nothing changes. The photo files are deleted only after the commit: a file delete cannot
+     * be rolled back, so deleting files earlier could leave rows that point to missing files.
+     * If a file cannot be deleted, the orphan is only logged (see HousingPhotoService).
      *
      * @param id       id of the listing from the URL
      * @param username current user from the JWT
@@ -159,8 +167,19 @@ public class HousingService {
      */
     public void deleteHousing(Long id, String username) {
         Housing housing = getOwnedHousing(id, username);
-        housingRepository.delete(housing);
+        // TransactionTemplate instead of @Transactional: the commit happens when execute() returns,
+        // so the file cleanup below runs after it. @Transactional on this method would commit only
+        // after the files are gone, and on a private helper it would be ignored (self-invocation skips the proxy)
+        List<String> keys = transactionTemplate.execute(status -> {
+            // photo rows first: housing_photo has a foreign key to housing
+            List<String> storageKeys = housingPhotoService.deleteAllHousingPhotosByHousingIdFromRepo(housing.getId());
+            housingRepository.delete(housing);
+            return storageKeys;
+        });
+
+        housingPhotoService.deleteHousingPhotosFromStorage(keys);
     }
+
 
 
     // loads a listing and makes sure it belongs to the current user; shared by update and delete,

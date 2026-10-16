@@ -19,4 +19,6 @@ public interface HousingPhotoRepository extends JpaRepository<HousingPhoto, UUID
      * may return rows in any order, and the photo order in the UI would jump around.
      */
     List<HousingPhoto> findAllByHousingOrderByCreatedAtAsc(Housing housing);
+
+    List<HousingPhoto> findAllByHousingId(Long housingId);
 }

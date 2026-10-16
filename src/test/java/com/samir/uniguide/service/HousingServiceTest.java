@@ -19,6 +19,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -44,6 +46,12 @@ public class HousingServiceTest {
     private HousingRepository housingRepository;
     @Mock
     private UserRepository userRepository;
+
+    @Mock
+    private TransactionTemplate transactionTemplate;
+
+    @Mock
+    private HousingPhotoService housingPhotoService;
 
     @InjectMocks
     private HousingService housingService;
@@ -360,12 +368,18 @@ public class HousingServiceTest {
         Housing housing = buildHousing(1L, author, "WG room");
         when(userRepository.findByUsername(AUTHOR)).thenReturn(Optional.of(author));
         when(housingRepository.findById(1L)).thenReturn(Optional.of(housing));
+        when(transactionTemplate.execute(any())).thenAnswer(invocation -> {
+            TransactionCallback<?> callback = invocation.getArgument(0);
+            return callback.doInTransaction(null);
+        });
+        when(housingPhotoService.deleteAllHousingPhotosByHousingIdFromRepo(1L)).thenReturn(List.of("housing/a.jpg", "housing/b.jpg"));
 
         //Act
         housingService.deleteHousing(1L, AUTHOR);
 
         //Assert
         verify(housingRepository).delete(housing);
+        verify(housingPhotoService).deleteHousingPhotosFromStorage(List.of("housing/a.jpg", "housing/b.jpg"));
     }
 
     @Test

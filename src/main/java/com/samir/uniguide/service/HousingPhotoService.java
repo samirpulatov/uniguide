@@ -14,7 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -152,18 +152,53 @@ public class HousingPhotoService {
             throw new ResourceNotFoundException("Photo not found");
         }
 
-        // a database error is a real failure: let it reach GlobalExceptionHandler
+        String storageKey = housingPhoto.getStorageKey();
+
         housingPhotoRepository.delete(housingPhoto);
 
-        // file cleanup is best effort, see the Javadoc above
-        try {
-            storageService.delete(housingPhoto.getStorageKey());
-        } catch (Exception e) {
-            log.warn("Could not delete housing photo for: {}", housingPhoto.getId(), e);
+        deleteHousingPhotosFromStorage(List.of(storageKey));
+    }
+
+    /**
+     * Deletes the photo rows of a listing, but not the files. Used by
+     * {@link HousingService#deleteHousing}, which runs this inside its transaction and deletes
+     * the files only after the commit (see {@link #deleteHousingPhotosFromStorage}).
+     * No ownership check here: the caller must have checked it already. Do not call from a controller.
+     *
+     * @param housingId id of the listing
+     * @return storage keys of the deleted photos, needed later to delete the files
+     */
+    public List<String> deleteAllHousingPhotosByHousingIdFromRepo(Long housingId) {
+        List<HousingPhoto> photos = housingPhotoRepository.findAllByHousingId(housingId);
+        List<String> storageKeys  = new ArrayList<>();
+        for (HousingPhoto housingPhoto : photos) {
+            storageKeys.add(housingPhoto.getStorageKey());
+            housingPhotoRepository.delete(housingPhoto);
         }
+
+        return storageKeys;
 
     }
 
+
+    /**
+     * Deletes photo files from storage, best effort. Call it only after the rows are committed.
+     * A file that cannot be deleted is logged with its key and skipped, so one failure
+     * does not stop the others and does not fail the request.
+     * No ownership check here: the caller must have checked it already.
+     *
+     * @param storageKeys keys returned by {@link #deleteAllHousingPhotosByHousingIdFromRepo}
+     */
+    public void deleteHousingPhotosFromStorage(List<String> storageKeys) {
+       storageKeys.forEach(storageKey -> {
+           try {
+               storageService.delete(storageKey);
+           } catch (Exception e) {
+               log.warn("Could not delete housing photo: {}",storageKey, e);
+           }
+       });
+
+    }
 
     // checks the Content-Type sent by the client; the file content itself is not inspected
     private void validatePhoto(MultipartFile file) {
