@@ -182,6 +182,27 @@ export interface TodoTaskResponse {
   createdAt: string;
 }
 
+// ---- Housing ----
+export type HouseType = 'WG_ROOM' | 'APARTMENT' | 'DORM';
+
+// BigDecimal fields arrive as JSON numbers
+export interface HousingResponse {
+  id: number;
+  houseType: HouseType;
+  title: string;
+  coldRent: number;
+  warmRent: number;
+  area: number;
+  deposit: number;
+  city: City;
+  postCode: string;
+  street: string;
+  content: string;
+  createdAt: string;
+  updatedAt: string | null;
+  authorName: string;
+}
+
 // ---- Housing photos ----
 // metadata only: the image itself is loaded by id via housingPhotosApi.getPhotoBlob
 export interface HousingPhotoResponse {
