@@ -182,6 +182,13 @@ export interface TodoTaskResponse {
   createdAt: string;
 }
 
+// ---- Housing photos ----
+// metadata only: the image itself is loaded by id via housingPhotosApi.getPhotoBlob
+export interface HousingPhotoResponse {
+  id: string;
+  createdAt: string;
+}
+
 // ---- Errors ----
 export interface ErrorResponse {
   status: number;
