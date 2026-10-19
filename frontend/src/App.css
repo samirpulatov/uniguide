@@ -2197,6 +2197,94 @@ button[type='submit']:disabled {
   }
 }
 
+/* Dashboard: to-do + personal feed side by side */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 1.5rem;
+  align-items: start;
+}
+
+.feed-card {
+  padding: clamp(1.25rem, 4vw, 2.25rem);
+  margin-top: clamp(0.5rem, 4vh, 2rem);
+}
+
+.feed-header {
+  margin-bottom: 1.25rem;
+}
+
+.feed-section-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin: 1.25rem 0 0.5rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.feed-section-title a {
+  font-size: 0.8rem;
+  font-weight: 500;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.feed-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.feed-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  padding: 0.65rem 0.8rem;
+  border-radius: var(--radius);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  text-decoration: none;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.feed-item:hover {
+  background: var(--surface-2);
+  border-color: var(--border-strong);
+}
+
+.feed-item-title {
+  color: var(--text-h);
+  font-weight: 500;
+  overflow-wrap: anywhere;
+}
+
+.feed-item-meta {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+.feed-empty {
+  color: var(--text-muted);
+  margin: 0.25rem 0;
+}
+
+@media (max-width: 860px) {
+  .dashboard-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .feed-card {
+    margin-top: 0;
+  }
+}
+
 /* Courses */
 
 .schedule-grid {
