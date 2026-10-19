@@ -6,7 +6,7 @@ function initials(firstName: string, lastName: string): string {
 }
 
 // links that make sense without an account (the backend serves them publicly)
-const PUBLIC_LINKS = ['/', '/forum'];
+const PUBLIC_LINKS = ['/', '/jobs', '/forum'];
 
 const NAV_LINKS = [
   { to: '/', label: 'Guides', match: (path: string) => path === '/' || path.startsWith('/guides') },
@@ -14,6 +14,7 @@ const NAV_LINKS = [
   { to: '/my-guides', label: 'My Guides', match: (path: string) => path === '/my-guides' },
   { to: '/documents', label: 'Documents', match: (path: string) => path === '/documents' },
   { to: '/housing', label: 'Housing', match: (path: string) => path.startsWith('/housing') },
+  { to: '/jobs', label: 'Jobs', match: (path: string) => path.startsWith('/jobs') },
   { to: '/courses', label: 'Courses', match: (path: string) => path === '/courses' },
   { to: '/forum', label: 'Community', match: (path: string) => path.startsWith('/forum') },
 ];

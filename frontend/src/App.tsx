@@ -16,6 +16,9 @@ import { DocumentsPage } from './pages/DocumentsPage';
 import { HousingPage } from './pages/HousingPage';
 import { HousingDetailPage } from './pages/HousingDetailPage';
 import { HousingFormPage } from './pages/HousingFormPage';
+import { JobsPage } from './pages/JobsPage';
+import { JobDetailPage } from './pages/JobDetailPage';
+import { JobFormPage } from './pages/JobFormPage';
 import { CoursesPage } from './pages/CoursesPage';
 import { ForumPage } from './pages/ForumPage';
 import { ForumThreadPage } from './pages/ForumThreadPage';
@@ -38,6 +41,9 @@ function AppShell() {
           {/* reading the forum is public on the backend; posting needs a login */}
           <Route path="/forum" element={<ForumPage />} />
           <Route path="/forum/:id" element={<ForumThreadPage />} />
+          {/* job vacancies are public to read, too; posting needs a login */}
+          <Route path="/jobs" element={<JobsPage />} />
+          <Route path="/jobs/:id" element={<JobDetailPage />} />
 
           <Route element={<ProtectedRoute />}>
             <Route path="/guides/new" element={<GuideFormPage />} />
@@ -52,6 +58,8 @@ function AppShell() {
             <Route path="/housing/new" element={<HousingFormPage />} />
             <Route path="/housing/:id" element={<HousingDetailPage />} />
             <Route path="/housing/:id/edit" element={<HousingFormPage />} />
+            <Route path="/jobs/new" element={<JobFormPage />} />
+            <Route path="/jobs/:id/edit" element={<JobFormPage />} />
             <Route path="/courses" element={<CoursesPage />} />
             <Route path="/forum/new" element={<ForumThreadFormPage />} />
             <Route path="/forum/:id/edit" element={<ForumThreadFormPage />} />

@@ -2737,3 +2737,31 @@ button[type='submit']:disabled {
 .input-with-icon--select:focus-within .select-chevron {
   color: var(--accent);
 }
+
+/* Jobs: cards and detail page reuse the housing styles; only the job-specific bits live here */
+.job-card .housing-body {
+  padding-top: 1.05rem;
+}
+
+.job-company {
+  font-size: 0.88rem;
+  color: var(--text-h);
+  overflow-wrap: anywhere;
+}
+
+.job-company--large {
+  margin: 0 0 0.4rem;
+  font-size: 1rem;
+}
+
+/* first lines of the description as a teaser */
+.job-snippet {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  overflow-wrap: anywhere;
+}

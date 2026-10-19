@@ -1,4 +1,4 @@
-import type { City, ForumCategory, GuideCategory, HouseType, University } from '../types';
+import type { City, ForumCategory, GuideCategory, HouseType, JobType, University } from '../types';
 import { UNIVERSITY_CITY } from '../types';
 
 export const CITIES: City[] = [
@@ -45,6 +45,15 @@ export const HOUSE_TYPE_LABELS: Record<HouseType, string> = {
 
 export const HOUSE_TYPES = Object.keys(HOUSE_TYPE_LABELS) as HouseType[];
 
+export const JOB_TYPE_LABELS: Record<JobType, string> = {
+  MINIJOB: 'Minijob',
+  WERKSTUDENT: 'Werkstudent',
+  PRAKTIKUM: 'Internship',
+  TEILZEIT: 'Part-time',
+};
+
+export const JOB_TYPES = Object.keys(JOB_TYPE_LABELS) as JobType[];
+
 // Universities that belong to the given city — drives the cascading dropdown
 // (selecting a city narrows down which universities make sense to pick).
 export function universitiesForCity(city: City | null | undefined): University[] {
@@ -86,6 +95,11 @@ const squareMeters = new Intl.NumberFormat('en', { maximumFractionDigits: 1 });
 
 export function formatEuro(value: number): string {
   return `€${euro.format(value)}`;
+}
+
+// hourly wage of a job vacancy; 0 means the job is unpaid
+export function formatHourlyWage(value: number): string {
+  return value === 0 ? 'Unpaid' : `${formatEuro(value)}/h`;
 }
 
 export function formatArea(value: number): string {

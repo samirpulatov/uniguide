@@ -225,6 +225,33 @@ export interface HousingPhotoResponse {
   createdAt: string;
 }
 
+// ---- Jobs ----
+export type JobType = 'MINIJOB' | 'PRAKTIKUM' | 'WERKSTUDENT' | 'TEILZEIT';
+
+// salaryPerHour is always € per hour; 0 = unpaid (e.g. Pflichtpraktikum)
+export interface JobVacancyResponse {
+  id: number;
+  title: string;
+  city: City;
+  jobType: JobType;
+  company: string;
+  salaryPerHour: number;
+  description: string;
+  createdAt: string;
+  updatedAt: string | null;
+  authorName: string;
+}
+
+// Body of POST /jobs and PUT /jobs/{id} (PUT replaces the whole vacancy)
+export interface JobVacancyRequest {
+  title: string;
+  city: City;
+  jobType: JobType;
+  company: string;
+  salaryPerHour: number;
+  description: string;
+}
+
 // ---- Errors ----
 export interface ErrorResponse {
   status: number;
