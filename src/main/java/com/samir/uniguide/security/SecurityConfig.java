@@ -55,6 +55,10 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/forum/threads", "/forum/threads/**").permitAll()
                         .requestMatchers("/todos", "/todos/**").authenticated()
                         .requestMatchers("/housing", "/housing/**").authenticated()
+                        // job vacancies are public to read (no addresses, unlike housing); /jobs/me needs a user
+                        .requestMatchers(HttpMethod.GET, "/jobs/me").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/jobs", "/jobs/**").permitAll()
+                        .requestMatchers("/jobs", "/jobs/**").authenticated()
                         .anyRequest().authenticated()
                 )
                 .exceptionHandling(ex -> ex
