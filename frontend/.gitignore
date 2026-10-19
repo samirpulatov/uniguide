@@ -22,3 +22,7 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# backups and previews left by design tools (Claude Design)
+_backup*/
+Claude outputs/
