@@ -4,6 +4,7 @@ import { forumApi } from '../api/forum';
 import { extractErrorMessage } from '../api/errors';
 import { useAuth } from '../context/useAuth';
 import { ForumReplyItem } from '../components/ForumReplyItem';
+import { ArrowLeftIcon, EditIcon, TrashIcon } from '../components/icons';
 import { formatDateTime, formatEnumLabel, initialsOf } from '../constants/enumOptions';
 import type { ForumReplyResponse, ForumThreadResponse } from '../types';
 
@@ -92,56 +93,57 @@ export function ForumThreadPage() {
     }
   };
 
-  if (isLoading) return <p className="status-message">Loading...</p>;
-  if (loadError) return <p className="form-error">{loadError}</p>;
+  if (isLoading) return <p className="status-message page-thread">Loading…</p>;
+  if (loadError) return <p className="message message--error page-thread">{loadError}</p>;
   if (!thread) return null;
 
   const isAuthor = user?.username === thread.authorName;
   const replyCount = countReplies(thread.replies);
+  const wasEdited = thread.updatedAt && thread.updatedAt !== thread.createdAt;
 
   return (
     <div className="page-thread">
-      <Link to="/forum" className="forum-back-link">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M19 12H5M11 6l-6 6 6 6" />
-        </svg>
-        Back to forum
+      <Link to="/forum" className="back-link">
+        <ArrowLeftIcon />
+        All threads
       </Link>
 
-      <h1 style={{ fontSize: '1.6rem', marginBottom: '0.9rem' }}>{thread.title}</h1>
-      <div className="forum-thread-tags" style={{ marginBottom: '1.5rem' }}>
-        {thread.forumCategory && <span className="forum-tag">{formatEnumLabel(thread.forumCategory)}</span>}
-        {thread.city && <span className="forum-tag forum-tag--outline">{formatEnumLabel(thread.city)}</span>}
-        {thread.university && <span className="forum-tag forum-tag--outline">{formatEnumLabel(thread.university)}</span>}
-        {!thread.forumCategory && !thread.city && <span className="forum-tag">Announcement</span>}
-      </div>
-
-      <div className="forum-post">
-        <div className="forum-avatar">{initialsOf(thread.authorName)}</div>
-        <div style={{ flex: 1 }}>
-          <div className="forum-post-meta">
-            <strong>{thread.authorName}</strong>{' '}
-            <span style={{ opacity: 0.5 }}>
-              · {formatDateTime(thread.createdAt)}
-              {thread.updatedAt && thread.updatedAt !== thread.createdAt ? ' (edited)' : ''}
-            </span>
-          </div>
-          <div className="forum-post-body">{thread.content}</div>
-          {isAuthor && (
-            <div className="guide-actions">
-              <Link to={`/forum/${thread.id}/edit`}>Edit</Link>
-              <button type="button" onClick={handleDeleteThread}>Delete</button>
-            </div>
-          )}
+      <article className="card reading-card rise">
+        <div className="guide-detail-top">
+          {thread.forumCategory && <span className="tag">{formatEnumLabel(thread.forumCategory)}</span>}
+          {thread.city && <span className="tag tag--outline">{formatEnumLabel(thread.city)}</span>}
+          {thread.university && <span className="tag tag--outline">{formatEnumLabel(thread.university)}</span>}
+          {!thread.forumCategory && !thread.city && <span className="tag tag--neutral">Announcement</span>}
         </div>
-      </div>
+        <h1 className="reading-title">{thread.title}</h1>
+        <div className="byline">
+          <span className="avatar avatar--sm" aria-hidden="true">{initialsOf(thread.authorName)}</span>
+          <span>
+            <strong>{thread.authorName}</strong> · {formatDateTime(thread.createdAt)}
+            {wasEdited ? ' (edited)' : ''}
+          </span>
+        </div>
+        <div className="post-body">{thread.content}</div>
+        {isAuthor && (
+          <div className="reading-actions">
+            <Link to={`/forum/${thread.id}/edit`} className="btn btn--secondary btn--sm">
+              <EditIcon />
+              Edit
+            </Link>
+            <button type="button" className="btn btn--danger btn--sm" onClick={handleDeleteThread}>
+              <TrashIcon />
+              Delete
+            </button>
+          </div>
+        )}
+      </article>
 
-      {actionError && <p className="form-error">{actionError}</p>}
+      {actionError && <p className="message message--error">{actionError}</p>}
 
-      <h3 style={{ marginBottom: '1rem', opacity: 0.8 }}>
+      <h2 className="replies-title">
         {replyCount} {replyCount === 1 ? 'reply' : 'replies'}
-      </h3>
-      <div style={{ marginBottom: '2rem' }}>
+      </h2>
+      <div className="reply-list">
         {(thread.replies ?? []).map((reply) => (
           <ForumReplyItem
             key={reply.id}
@@ -155,23 +157,26 @@ export function ForumThreadPage() {
       </div>
 
       {user ? (
-        <div className="forum-reply-box">
-          <label style={{ display: 'block', fontSize: '0.75rem', opacity: 0.7, marginBottom: '0.4rem' }}>
-            Write a reply
+        <div className="card glass reply-composer">
+          <label className="field">
+            <span className="field-label">Write a reply</span>
+            <textarea
+              className="textarea"
+              placeholder="Share what you know — someone else is probably wondering the same thing."
+              value={draft}
+              onChange={(e) => setDraft(e.target.value)}
+            />
           </label>
-          <textarea
-            placeholder="Share what you know — someone else is probably wondering the same thing."
-            value={draft}
-            onChange={(e) => setDraft(e.target.value)}
-          />
-          <button type="button" className="button-outline" onClick={handleRootReply} disabled={isPosting || !draft.trim()}>
-            {isPosting ? 'Posting...' : 'Post reply'}
+          <button type="button" className="btn btn--primary" onClick={handleRootReply} disabled={isPosting || !draft.trim()}>
+            {isPosting ? 'Posting…' : 'Post reply'}
           </button>
         </div>
       ) : (
-        <p className="status-message">
-          <Link to="/login" state={{ from: { pathname: `/forum/${thread.id}` } }}>Log in</Link> to join the discussion.
-        </p>
+        <div className="empty">
+          <span>
+            <Link to="/login" state={{ from: { pathname: `/forum/${thread.id}` } }}>Log in</Link> to join the discussion.
+          </span>
+        </div>
       )}
     </div>
   );

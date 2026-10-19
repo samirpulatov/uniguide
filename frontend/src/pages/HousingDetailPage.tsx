@@ -3,6 +3,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import { housingApi } from '../api/housing';
 import { housingPhotosApi } from '../api/housingPhotos';
 import { extractErrorMessage } from '../api/errors';
+import { ArrowLeftIcon, PinIcon } from '../components/icons';
 import { PhotoCarousel } from '../components/PhotoCarousel';
 import { useAuth } from '../context/useAuth';
 import {
@@ -74,8 +75,11 @@ export function HousingDetailPage() {
   if (!housing) {
     return (
       <div className="page">
-        <p className="form-error">{result.error}</p>
-        <Link to="/housing" className="back-link">← Back to housing</Link>
+        <p className="message message--error">{result.error}</p>
+        <Link to="/housing" className="back-link">
+        <ArrowLeftIcon />
+        All housing
+      </Link>
       </div>
     );
   }
@@ -89,20 +93,20 @@ export function HousingDetailPage() {
 
   return (
     <div className="page-wide housing-detail">
-      <Link to="/housing" className="back-link">← Back to housing</Link>
+      <Link to="/housing" className="back-link">
+        <ArrowLeftIcon />
+        All housing
+      </Link>
 
       <div className="housing-detail-layout">
-        <div className="housing-detail-main">
+        <div className="housing-detail-main rise">
           <PhotoCarousel photos={photos} alt={housing.title} className="housing-detail-media" />
 
           <div className="housing-detail-heading">
-            <span className="housing-tag">{HOUSE_TYPE_LABELS[housing.houseType]}</span>
+            <span className="tag tag--neutral">{HOUSE_TYPE_LABELS[housing.houseType]}</span>
             <h1>{housing.title}</h1>
-            <p className="housing-meta">
-              <svg className="housing-icon" viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z" />
-                <circle cx="12" cy="9.5" r="2.5" />
-              </svg>
+            <p className="listing-meta">
+              <PinIcon />
               {housing.street}, {housing.postCode} {formatEnumLabel(housing.city)}
             </p>
           </div>
@@ -114,10 +118,10 @@ export function HousingDetailPage() {
         </div>
 
         <aside className="housing-detail-side">
-          <div className="housing-detail-card">
-            <div className="housing-price">
+          <div className="card glass housing-detail-card rise">
+            <div className="listing-price detail-price">
               {formatEuro(housing.warmRent)}
-              <span className="housing-price-unit">/mo warm</span>
+              <small>/mo warm</small>
             </div>
             <dl className="housing-facts">
               <dt>Cold rent</dt>
@@ -133,11 +137,11 @@ export function HousingDetailPage() {
             </dl>
           </div>
 
-          <div className="housing-detail-card housing-author">
-            <span className="housing-avatar" aria-hidden="true">{initialsOf(housing.authorName)}</span>
+          <div className="card glass housing-detail-card detail-author rise">
+            <span className="avatar" aria-hidden="true">{initialsOf(housing.authorName)}</span>
             <div>
-              <div className="housing-author-name">{housing.authorName}</div>
-              <div className="housing-author-date" title={formatDateTime(housing.createdAt)}>
+              <div className="listing-author-name">{housing.authorName}</div>
+              <div className="listing-author-date" title={formatDateTime(housing.createdAt)}>
                 posted {timeAgo(housing.createdAt)}
                 {wasEdited && ` · edited ${timeAgo(housing.updatedAt!)}`}
               </div>
@@ -146,13 +150,13 @@ export function HousingDetailPage() {
 
           {isOwner && (
             <div className="housing-detail-actions">
-              <Link to={`/housing/${housing.id}/edit`} className="button-ghost">Edit</Link>
-              <button type="button" className="button-danger" onClick={handleDelete} disabled={isDeleting}>
+              <Link to={`/housing/${housing.id}/edit`} className="btn btn--secondary">Edit</Link>
+              <button type="button" className="btn btn--danger" onClick={handleDelete} disabled={isDeleting}>
                 {isDeleting ? 'Deleting…' : 'Delete'}
               </button>
             </div>
           )}
-          {actionError && <p className="form-error">{actionError}</p>}
+          {actionError && <p className="message message--error">{actionError}</p>}
         </aside>
       </div>
     </div>

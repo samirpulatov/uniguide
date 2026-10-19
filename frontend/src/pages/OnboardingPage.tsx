@@ -37,7 +37,7 @@ export function OnboardingPage() {
             <div className="onboarding-step-label">Step 1 of 4</div>
             <h1>Welcome to UniGuide</h1>
             <p className="status-message" style={{ display: 'block', margin: '0.5rem 0 1.75rem' }}>
-              A calm place to handle paperwork, housing, courses and everything else about
+              A calm place to handle paperwork, housing, jobs and everything else about
               starting university life in Germany. Takes about a minute to set up.
             </p>
             <div className="form">

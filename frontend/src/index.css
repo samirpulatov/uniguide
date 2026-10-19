@@ -1,45 +1,31 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+@import './styles/tokens.css';
+@import './styles/ui.css';
+@import './styles/motion.css';
+
+/* Legacy variable names still used by pages outside the redesign (auth, onboarding,
+   forms). They point at the design-system tokens, so both themes work. */
+:root,
+[data-theme] {
+  --text-h: var(--heading);
+  --text-muted: var(--muted);
+  --bg-deep: var(--sunken);
+  --surface-2: var(--sunken);
+  --glass: var(--surface);
+  --input-bg: var(--surface);
+  --accent-bg: var(--accent-soft);
+  --accent-border: var(--accent);
+  --accent-strong: var(--accent);
+  --success-bg: var(--success-soft);
+  --danger-bg: var(--danger-soft);
+  --warning-bg: var(--warning-soft);
+  --shadow: var(--shadow-sm);
+  --radius: var(--radius-md);
+  --focus-ring: 0 0 0 3px var(--accent-soft);
+  --sans: var(--font-sans);
+}
 
 :root {
-  /* Night palette: deep navy/indigo background with purple accents */
-  --text: #b8b3d6;            /* muted lavender-grey body text */
-  --text-h: #f3f1fc;          /* headings, labels, input text */
-  --text-muted: #9a94bd;      /* helper text, placeholders */
-  --bg: #15132b;
-  --bg-deep: #0f0d22;
-  --surface: #1f1b3c;         /* solid panels (cards, rows, inputs) */
-  --surface-2: #29244c;       /* hovered / raised panels */
-  --glass: rgba(31, 27, 62, 0.62);
-  --input-bg: rgba(14, 12, 32, 0.55);
-  --border: rgba(190, 180, 255, 0.14);
-  --border-strong: rgba(190, 180, 255, 0.24);
-
-  --accent: #9d8ffa;          /* links, active nav, highlights */
-  --accent-hover: #b6abff;
-  --accent-strong: #6d5be0;
-  --accent-bg: rgba(139, 124, 246, 0.15);
-  --accent-border: rgba(139, 124, 246, 0.45);
-  --accent-glow: rgba(124, 106, 240, 0.35);
-  --accent-gradient: linear-gradient(135deg, #8272f3 0%, #5f4dd8 100%);
-  --accent-gradient-hover: linear-gradient(135deg, #9083f7 0%, #6a58e2 100%);
-
-  --success: #4ade80;
-  --success-bg: rgba(74, 222, 128, 0.12);
-  --danger: #fb8a8a;
-  --danger-bg: rgba(248, 113, 113, 0.13);
-  --warning: #fbbf24;
-  --warning-bg: rgba(251, 191, 36, 0.12);
-
-  --shadow: rgba(5, 3, 20, 0.4) 0 2px 6px, rgba(5, 3, 20, 0.25) 0 1px 2px;
-  --shadow-glow: 0 0 0 1px rgba(139, 124, 246, 0.08), 0 20px 60px -20px rgba(91, 72, 214, 0.45);
-  --radius: 10px;
-  --radius-lg: 16px;
-  --focus-ring: 0 0 0 3px rgba(157, 143, 250, 0.45);
-
-  --sans: 'Inter', system-ui, Roboto, sans-serif;
-
-  font: 16px/1.55 var(--sans);
-  color-scheme: dark;
+  font: 400 var(--fs-base)/1.6 var(--font-sans);
   color: var(--text);
   background: var(--bg);
   font-synthesis: none;
@@ -55,24 +41,24 @@
 body {
   margin: 0;
   min-height: 100svh;
-  background-color: var(--bg);
-  background-image:
-    radial-gradient(900px 520px at 50% -10%, rgba(109, 91, 224, 0.28), transparent 70%),
-    radial-gradient(700px 600px at 100% 70%, rgba(124, 92, 230, 0.16), transparent 70%),
-    radial-gradient(600px 500px at 0% 90%, rgba(88, 70, 200, 0.14), transparent 70%),
-    linear-gradient(180deg, var(--bg) 0%, var(--bg-deep) 100%);
-  background-attachment: fixed;
+  background: var(--bg);
   overflow-x: clip;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 ::placeholder {
-  color: var(--text-muted);
+  color: var(--muted);
   opacity: 1;
 }
 
 :focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
+}
+
+::selection {
+  background: var(--accent-soft);
+  color: var(--accent-ink);
 }
 
 #root {
@@ -82,24 +68,30 @@ body {
 }
 
 h1, h2, h3 {
-  font-family: var(--sans);
-  font-weight: 600;
-  color: var(--text-h);
-  letter-spacing: -0.02em;
+  font-family: var(--font-sans);
+  color: var(--heading);
 }
 
 h1 {
-  font-size: 1.85rem;
-  margin: 0 0 0.5rem;
+  font-size: 30px;
+  line-height: 36px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin: 0 0 8px;
 }
 
 h2 {
-  font-size: 1.25rem;
-  margin: 1.5rem 0 0.75rem;
+  font-size: 20px;
+  line-height: 28px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  margin: 24px 0 12px;
 }
 
 h3 {
-  font-size: 1.05rem;
+  font-size: var(--fs-lg);
+  line-height: 24px;
+  font-weight: 650;
   margin: 0;
 }
 
@@ -118,4 +110,10 @@ a:hover {
 
 button {
   font: inherit;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    transition: none !important;
+  }
 }

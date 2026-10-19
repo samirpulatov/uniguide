@@ -37,40 +37,39 @@ export function ForumReplyItem({ reply, depth, currentUsername, onReply, onDelet
   };
 
   return (
-    <div className={depth > 0 && depth <= MAX_INDENT_DEPTH ? 'forum-reply-children' : undefined}>
-      <div className={`forum-reply${reply.deleted ? ' forum-reply--deleted' : ''}`}>
-        <div className="forum-avatar" style={{ width: 30, height: 30 }}>
+    <div className={depth > 0 && depth <= MAX_INDENT_DEPTH ? 'reply-children' : undefined}>
+      <div className={`reply rise${reply.deleted ? ' reply--deleted' : ''}`}>
+        <span className="avatar avatar--sm" aria-hidden="true">
           {reply.deleted ? '–' : initialsOf(reply.authorName)}
-        </div>
-        <div style={{ flex: 1, minWidth: 0 }}>
-          <div className="forum-post-meta">
-            <strong>{reply.deleted ? 'Deleted reply' : reply.authorName}</strong>{' '}
-            <span style={{ opacity: 0.5 }}>· {formatDateTime(reply.createdAt)}</span>
+        </span>
+        <div className="reply-main">
+          <div className="reply-meta">
+            <strong>{reply.deleted ? 'Deleted reply' : reply.authorName}</strong> · {formatDateTime(reply.createdAt)}
           </div>
-          <div className="forum-post-body">
-            {reply.deleted ? 'This reply was deleted.' : reply.content}
-          </div>
+          <div className="post-body">{reply.deleted ? 'This reply was deleted.' : reply.content}</div>
           {currentUsername && !reply.deleted && (
-            <div className="forum-reply-actions">
-              <button type="button" onClick={() => setIsReplying((prev) => !prev)}>
+            <div className="reply-actions">
+              <button type="button" className="btn btn--ghost btn--sm" onClick={() => setIsReplying((prev) => !prev)}>
                 {isReplying ? 'Cancel' : 'Reply'}
               </button>
               {isAuthor && (
-                <button type="button" className="forum-reply-actions-danger" onClick={() => onDelete(reply.id)}>
+                <button type="button" className="btn btn--ghost btn--sm btn--danger-hover" onClick={() => onDelete(reply.id)}>
                   Delete
                 </button>
               )}
             </div>
           )}
           {isReplying && (
-            <div className="forum-reply-box forum-reply-box--inline">
+            <div className="reply-inline">
               <textarea
-                placeholder={`Reply to ${reply.authorName}...`}
+                className="textarea"
+                aria-label={`Reply to ${reply.authorName}`}
+                placeholder={`Reply to ${reply.authorName}…`}
                 value={draft}
                 onChange={(e) => setDraft(e.target.value)}
               />
-              <button type="button" className="button-outline" onClick={submit} disabled={isSubmitting || !draft.trim()}>
-                {isSubmitting ? 'Posting...' : 'Post reply'}
+              <button type="button" className="btn btn--primary btn--sm" onClick={submit} disabled={isSubmitting || !draft.trim()}>
+                {isSubmitting ? 'Posting…' : 'Post reply'}
               </button>
             </div>
           )}

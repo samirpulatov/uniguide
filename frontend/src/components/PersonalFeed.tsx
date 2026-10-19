@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, type CSSProperties } from 'react';
 import { Link } from 'react-router-dom';
 import { guidesApi } from '../api/guides';
 import { forumApi } from '../api/forum';
@@ -74,29 +74,31 @@ export function PersonalFeed({ city, university }: { city: City | null; universi
   const place = [query.university, query.city].filter(Boolean).map((v) => formatEnumLabel(v!)).join(' · ');
 
   return (
-    <section className="glass-card feed-card">
-      <header className="feed-header">
-        <span className="accent-line" aria-hidden="true" />
-        <h2 className="todo-title">For you</h2>
-        <p className="todo-date">{hasProfile ? place : 'Personal feed'}</p>
+    <section className="card feed-card rise" style={{ '--i': 1 } as CSSProperties} aria-labelledby="feed-title">
+      <header className="panel-head">
+        <div>
+          <h2 id="feed-title" className="card-title">For you</h2>
+          <p className="card-subtitle">{hasProfile ? place : 'Personal feed'}</p>
+        </div>
       </header>
 
       {!hasProfile ? (
-        <p className="feed-empty">
+        <p className="panel-empty">
           Add your city or university in your <Link to="/profile">profile</Link> to see guides and discussions
           that matter to you.
         </p>
       ) : result?.query !== query ? (
-        <p className="feed-empty">Loading…</p>
+        <p className="panel-empty">Loading…</p>
       ) : result.error ? (
-        <p className="form-error">{result.error}</p>
+        <p className="message message--error">{result.error}</p>
       ) : (
         <>
-          <h3 className="feed-section-title">
-            Latest guides <Link to="/">See all</Link>
-          </h3>
+          <div className="feed-section-head">
+            <h3 className="t-eyebrow">Latest guides</h3>
+            <Link to="/">See all</Link>
+          </div>
           {result.guides.length === 0 ? (
-            <p className="feed-empty">No guides for your place yet.</p>
+            <p className="panel-empty">No guides for your place yet.</p>
           ) : (
             <ul className="feed-list">
               {result.guides.map((guide) => (
@@ -112,11 +114,12 @@ export function PersonalFeed({ city, university }: { city: City | null; universi
             </ul>
           )}
 
-          <h3 className="feed-section-title">
-            Community <Link to="/forum">See all</Link>
-          </h3>
+          <div className="feed-section-head">
+            <h3 className="t-eyebrow">Community</h3>
+            <Link to="/forum">See all</Link>
+          </div>
           {result.threads.length === 0 ? (
-            <p className="feed-empty">
+            <p className="panel-empty">
               No discussions yet. <Link to="/forum/new">Start one</Link>
             </p>
           ) : (

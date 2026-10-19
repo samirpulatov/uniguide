@@ -1,0 +1,244 @@
+/* UniGuide — living background and motion utilities.
+   Everything here is decoration: it reads tokens only, and prefers-reduced-motion switches it off. */
+
+/* ---------- Living background ---------- */
+.living-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.living-blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  will-change: transform;
+}
+
+.living-blob--a {
+  width: 620px;
+  height: 620px;
+  left: -160px;
+  top: -200px;
+  background: var(--blob-a);
+  animation: living-drift-a 26s ease-in-out infinite alternate;
+}
+
+.living-blob--b {
+  width: 520px;
+  height: 520px;
+  right: -140px;
+  top: 80px;
+  background: var(--blob-b);
+  animation: living-drift-b 32s ease-in-out infinite alternate;
+}
+
+.living-blob--c {
+  width: 700px;
+  height: 700px;
+  left: 30%;
+  bottom: -420px;
+  background: var(--blob-c);
+  animation: living-drift-c 38s ease-in-out infinite alternate;
+}
+
+/* inner pages: same colours, quieter */
+.living-bg--page .living-blob { opacity: 0.65; }
+.living-bg--page .living-blob--c { display: none; }
+
+@keyframes living-drift-a {
+  50% { transform: translate(120px, 60px) scale(1.12); }
+  100% { transform: translate(40px, 160px) scale(0.95); }
+}
+
+@keyframes living-drift-b {
+  50% { transform: translate(-90px, 90px) scale(1.08); }
+  100% { transform: translate(-160px, -30px) scale(1.15); }
+}
+
+@keyframes living-drift-c {
+  100% { transform: translate(-180px, -120px) scale(1.1); }
+}
+
+.living-dots {
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(circle, var(--grid-dot) 1.2px, transparent 1.6px);
+  background-size: 28px 28px;
+  -webkit-mask-image: radial-gradient(ellipse 70% 60% at 50% 15%, #000 30%, transparent 75%);
+  mask-image: radial-gradient(ellipse 70% 60% at 50% 15%, #000 30%, transparent 75%);
+}
+
+.living-contours {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  width: 100%;
+  height: 380px;
+  -webkit-mask-image: linear-gradient(#000 40%, transparent);
+  mask-image: linear-gradient(#000 40%, transparent);
+}
+
+.living-contours path {
+  fill: none;
+  stroke: var(--contour);
+  stroke-width: 1.5;
+  stroke-dasharray: 4 7;
+  animation: living-flow 14s linear infinite;
+}
+
+.living-contours path:nth-child(2n) {
+  animation-duration: 20s;
+  animation-direction: reverse;
+}
+
+@keyframes living-flow {
+  to { stroke-dashoffset: -220; }
+}
+
+/* content sits above the background layer */
+.navbar,
+.app-content {
+  position: relative;
+  z-index: 1;
+}
+
+.navbar {
+  position: sticky;
+  z-index: 20;
+}
+
+/* ---------- Entrance ---------- */
+.rise {
+  animation: rise var(--dur-slow) var(--ease-out) both;
+  animation-delay: calc(var(--i, 0) * 70ms);
+}
+
+/* uses the `translate` property, so it never fights a component's own `transform` (tilt, hover lift) */
+@keyframes rise {
+  from { opacity: 0; translate: 0 20px; }
+  to { opacity: 1; translate: 0 0; }
+}
+
+/* ---------- Pop button: lift, sheen, nudged icon ---------- */
+.btn-pop {
+  position: relative;
+  overflow: hidden;
+  transition: transform var(--dur-base) var(--ease-spring), box-shadow var(--dur-base) ease, background-color var(--dur-fast) ease;
+}
+
+.btn-pop:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 24px -12px var(--accent);
+}
+
+.btn-pop::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(110deg, transparent 30%, rgba(255, 255, 255, 0.35) 50%, transparent 70%);
+  transform: translateX(-120%);
+  pointer-events: none;
+}
+
+.btn-pop:hover::after {
+  transform: translateX(120%);
+  transition: transform var(--dur-slow) ease;
+}
+
+.btn-pop svg {
+  transition: transform var(--dur-base) var(--ease-spring);
+}
+
+.btn-pop:hover svg {
+  transform: translateX(3px);
+}
+
+.btn-pop--spin:hover svg {
+  transform: rotate(90deg);
+}
+
+/* ---------- Tilt card: the pointer handler sets --rx/--ry/--px/--py ---------- */
+.tilt {
+  position: relative;
+  overflow: hidden;
+  transform: perspective(900px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) translateY(var(--lift, 0));
+  transition: transform 0.2s ease-out, box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+.tilt:hover {
+  --lift: -4px;
+}
+
+.tilt::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(260px circle at var(--px, 50%) var(--py, 50%), var(--accent-soft), transparent 70%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.tilt:hover::before {
+  opacity: 1;
+}
+
+.tilt > * {
+  position: relative;
+}
+
+/* ---------- Live dot ---------- */
+.live-dot {
+  position: relative;
+  width: 8px;
+  height: 8px;
+  flex: none;
+  border-radius: 50%;
+  background: var(--success);
+}
+
+.live-dot::after {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  border: 2px solid var(--success);
+  animation: ping 1.8s ease-out infinite;
+}
+
+@keyframes ping {
+  0% { transform: scale(0.6); opacity: 0.9; }
+  100% { transform: scale(1.8); opacity: 0; }
+}
+
+/* ---------- Glass ---------- */
+.glass {
+  background: var(--glass);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+}
+
+/* ---------- Reduced motion: everything stands still ---------- */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .tilt {
+    transform: none !important;
+  }
+
+  /* the dot on the hero map moves with SVG <animateMotion>, which CSS animation rules don't stop */
+  .map-traveler {
+    display: none;
+  }
+}

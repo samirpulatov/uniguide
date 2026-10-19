@@ -399,7 +399,7 @@ export function HousingFormPage() {
                 <li key={item.key} className={item.error ? 'pending-photo pending-photo--error' : 'pending-photo'}>
                   <span className="pending-photo-name">{item.file.name}</span>
                   <span className="pending-photo-status">{item.error ?? 'will be uploaded on save'}</span>
-                  <button type="button" className="todo-cancel" onClick={() => removePending(item.key)}>
+                  <button type="button" className="btn btn--ghost btn--sm" onClick={() => removePending(item.key)}>
                     Remove
                   </button>
                 </li>

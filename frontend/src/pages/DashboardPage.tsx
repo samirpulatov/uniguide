@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, type FormEvent, type KeyboardEvent } from 'react';
 import { todosApi } from '../api/todos';
 import { extractErrorMessage } from '../api/errors';
-import { PageDecor } from '../components/AuthCard';
+import { CheckIcon, EditIcon, PlusIcon, TrashIcon } from '../components/icons';
 import { PersonalFeed } from '../components/PersonalFeed';
 import { useAuth } from '../context/useAuth';
 import type { TodoTaskResponse } from '../types';
@@ -154,38 +154,64 @@ export function DashboardPage() {
     month: 'long',
   });
 
+  const hour = new Date().getHours();
+  const greeting = hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening';
+  const doneCount = tasks.filter((t) => t.completed).length;
+
   return (
     <div className="page-wide dashboard">
-      <PageDecor />
+      <header className="page-head">
+        <div>
+          <p className="t-eyebrow page-eyebrow">{today}</p>
+          <h1>
+            {greeting}
+            {user ? `, ${user.firstName}` : ''}
+          </h1>
+          <p className="page-lead">Your tasks and what's new around your university.</p>
+        </div>
+      </header>
+
       <div className="dashboard-grid">
-        <section className="glass-card todo-card">
-          <header className="todo-header">
+        <section className="card todo-card rise" aria-labelledby="todo-title">
+          <header className="panel-head">
             <div>
-              <span className="accent-line" aria-hidden="true" />
-              <h1 className="todo-title">To-do</h1>
-              <p className="todo-date">{today}</p>
+              <h2 id="todo-title" className="card-title">To-do</h2>
+              <p className="card-subtitle">
+                {tasks.length === 0 ? 'Nothing planned yet' : `${doneCount} of ${tasks.length} done`}
+              </p>
             </div>
             <button
               type="button"
-              className="todo-add-button"
+              className="btn btn--primary btn--sm"
               onClick={() => setIsAdding(true)}
-              aria-label="Add a task"
               title="Add a task"
             >
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" aria-hidden="true">
-                <path d="M12 5v14M5 12h14" />
-              </svg>
+              <PlusIcon />
+              Add task
             </button>
           </header>
 
-          {error && <p className="form-error">{error}</p>}
+          {tasks.length > 0 && (
+            <div
+              className="todo-progress"
+              role="progressbar"
+              aria-label="Tasks done"
+              aria-valuemin={0}
+              aria-valuemax={tasks.length}
+              aria-valuenow={doneCount}
+            >
+              <span style={{ width: `${(doneCount / tasks.length) * 100}%` }} />
+            </div>
+          )}
+
+          {error && <p className="message message--error">{error}</p>}
 
           {isLoading ? (
-            <p className="todo-empty">Loading…</p>
+            <p className="panel-empty">Loading…</p>
           ) : (
             <ul className="todo-list">
               {tasks.length === 0 && !isAdding && (
-                <li className="todo-empty">No tasks yet. Press + to add your first one.</li>
+                <li className="panel-empty">No tasks yet. Add your first one — for example "Book Anmeldung appointment".</li>
               )}
 
               {tasks.map((task) => {
@@ -193,10 +219,11 @@ export function DashboardPage() {
 
                 if (editingId === task.id) {
                   return (
-                    <li key={task.id} className="todo-row todo-row--new">
-                      <form onSubmit={(e) => handleEditSave(e, task)} className="todo-new-form">
+                    <li key={task.id} className="todo-item todo-item--editing">
+                      <form onSubmit={(e) => handleEditSave(e, task)} className="todo-form">
                         <input
                           autoFocus
+                          className="input"
                           value={editContent}
                           onChange={(e) => setEditContent(e.target.value)}
                           onKeyDown={handleEditKeyDown}
@@ -204,10 +231,10 @@ export function DashboardPage() {
                           aria-label="Edit task"
                           disabled={busy}
                         />
-                        <button type="submit" disabled={busy || !editContent.trim()}>
+                        <button type="submit" className="btn btn--primary btn--sm" disabled={busy || !editContent.trim()}>
                           Save
                         </button>
-                        <button type="button" className="todo-cancel" onClick={cancelEditing}>
+                        <button type="button" className="btn btn--ghost btn--sm" onClick={cancelEditing}>
                           Cancel
                         </button>
                       </form>
@@ -216,61 +243,58 @@ export function DashboardPage() {
                 }
 
                 return (
-                  <li key={task.id} className="todo-row">
+                  <li key={task.id} className="todo-item">
                     <button
                       type="button"
-                      className={`task-checkbox ${task.completed ? 'task-checkbox--done' : ''}`}
+                      role="checkbox"
+                      aria-checked={task.completed}
+                      className="checkbox"
                       onClick={() => handleToggle(task)}
                       disabled={busy}
-                      aria-label={task.completed ? 'Mark as not done' : 'Mark as done'}
+                      aria-label={task.content}
                     >
-                      {task.completed && (
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--bg)" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                          <path d="M5 13l4 4L19 7" />
-                        </svg>
-                      )}
+                      {task.completed && <CheckIcon />}
                     </button>
                     <span
-                      className={`todo-content ${task.completed ? 'todo-content--done' : ''}`}
+                      className={`todo-item-text${task.completed ? ' todo-item-text--done' : ''}`}
                       onDoubleClick={() => startEditing(task)}
                       title="Double-click to edit"
                     >
                       {task.content}
                     </span>
-                    <span className="todo-created">{formatCreatedAt(task.createdAt)}</span>
-                    <button
-                      type="button"
-                      className="todo-icon-button"
-                      onClick={() => startEditing(task)}
-                      disabled={busy}
-                      aria-label={`Edit "${task.content}"`}
-                      title="Edit"
-                    >
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                        <path d="M4 20h4L19 9l-4-4L4 16v4zM13.5 6.5l4 4" />
-                      </svg>
-                    </button>
-                    <button
-                      type="button"
-                      className="todo-icon-button todo-icon-button--danger"
-                      onClick={() => handleDelete(task.id)}
-                      disabled={busy}
-                      aria-label={`Delete "${task.content}"`}
-                      title="Delete"
-                    >
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                        <path d="M4 7h16M10 11v6M14 11v6M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2l1-12M9 7V4h6v3" />
-                      </svg>
-                    </button>
+                    <span className="todo-item-date">{formatCreatedAt(task.createdAt)}</span>
+                    <span className="todo-item-actions">
+                      <button
+                        type="button"
+                        className="btn btn--ghost btn--icon btn--sm"
+                        onClick={() => startEditing(task)}
+                        disabled={busy}
+                        aria-label={`Edit "${task.content}"`}
+                        title="Edit"
+                      >
+                        <EditIcon />
+                      </button>
+                      <button
+                        type="button"
+                        className="btn btn--ghost btn--icon btn--sm btn--danger-hover"
+                        onClick={() => handleDelete(task.id)}
+                        disabled={busy}
+                        aria-label={`Delete "${task.content}"`}
+                        title="Delete"
+                      >
+                        <TrashIcon />
+                      </button>
+                    </span>
                   </li>
                 );
               })}
 
               {isAdding && (
-                <li className="todo-row todo-row--new">
-                  <form onSubmit={handleCreate} className="todo-new-form">
+                <li className="todo-item todo-item--editing">
+                  <form onSubmit={handleCreate} className="todo-form">
                     <input
                       ref={inputRef}
+                      className="input"
                       value={newContent}
                       onChange={(e) => setNewContent(e.target.value)}
                       onKeyDown={handleAddKeyDown}
@@ -279,10 +303,10 @@ export function DashboardPage() {
                       aria-label="New task"
                       disabled={isSaving}
                     />
-                    <button type="submit" disabled={isSaving || !newContent.trim()}>
+                    <button type="submit" className="btn btn--primary btn--sm" disabled={isSaving || !newContent.trim()}>
                       Add
                     </button>
-                    <button type="button" className="todo-cancel" onClick={closeAddRow}>
+                    <button type="button" className="btn btn--ghost btn--sm" onClick={closeAddRow}>
                       Cancel
                     </button>
                   </form>

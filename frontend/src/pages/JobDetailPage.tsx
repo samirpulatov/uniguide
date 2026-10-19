@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { jobsApi } from '../api/jobs';
 import { extractErrorMessage } from '../api/errors';
+import { ArrowLeftIcon, PinIcon } from '../components/icons';
 import { useAuth } from '../context/useAuth';
 import {
   JOB_TYPE_LABELS,
@@ -62,8 +63,11 @@ export function JobDetailPage() {
   if (!job) {
     return (
       <div className="page">
-        <p className="form-error">{result.error}</p>
-        <Link to="/jobs" className="back-link">← Back to jobs</Link>
+        <p className="message message--error">{result.error}</p>
+        <Link to="/jobs" className="back-link">
+        <ArrowLeftIcon />
+        All jobs
+      </Link>
       </div>
     );
   }
@@ -75,19 +79,19 @@ export function JobDetailPage() {
 
   return (
     <div className="page-wide housing-detail">
-      <Link to="/jobs" className="back-link">← Back to jobs</Link>
+      <Link to="/jobs" className="back-link">
+        <ArrowLeftIcon />
+        All jobs
+      </Link>
 
       <div className="housing-detail-layout">
-        <div className="housing-detail-main">
+        <div className="housing-detail-main rise">
           <div className="housing-detail-heading">
-            <span className="housing-tag">{JOB_TYPE_LABELS[job.jobType]}</span>
+            <span className="tag tag--neutral">{JOB_TYPE_LABELS[job.jobType]}</span>
             <h1>{job.title}</h1>
-            <p className="job-company job-company--large">{job.company}</p>
-            <p className="housing-meta">
-              <svg className="housing-icon" viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z" />
-                <circle cx="12" cy="9.5" r="2.5" />
-              </svg>
+            <p className="listing-meta listing-meta--strong">{job.company}</p>
+            <p className="listing-meta">
+              <PinIcon />
               {formatEnumLabel(job.city)}
             </p>
           </div>
@@ -99,8 +103,8 @@ export function JobDetailPage() {
         </div>
 
         <aside className="housing-detail-side">
-          <div className="housing-detail-card">
-            <div className="housing-price">{formatHourlyWage(job.salaryPerHour)}</div>
+          <div className="card glass housing-detail-card rise">
+            <div className="listing-price detail-price">{formatHourlyWage(job.salaryPerHour)}</div>
             <dl className="housing-facts">
               <dt>Company</dt>
               <dd>{job.company}</dd>
@@ -111,11 +115,11 @@ export function JobDetailPage() {
             </dl>
           </div>
 
-          <div className="housing-detail-card housing-author">
-            <span className="housing-avatar" aria-hidden="true">{initialsOf(job.authorName)}</span>
+          <div className="card glass housing-detail-card detail-author rise">
+            <span className="avatar" aria-hidden="true">{initialsOf(job.authorName)}</span>
             <div>
-              <div className="housing-author-name">{job.authorName}</div>
-              <div className="housing-author-date" title={formatDateTime(job.createdAt)}>
+              <div className="listing-author-name">{job.authorName}</div>
+              <div className="listing-author-date" title={formatDateTime(job.createdAt)}>
                 posted {timeAgo(job.createdAt)}
                 {wasEdited && ` · edited ${timeAgo(job.updatedAt!)}`}
               </div>
@@ -124,13 +128,13 @@ export function JobDetailPage() {
 
           {isOwner && (
             <div className="housing-detail-actions">
-              <Link to={`/jobs/${job.id}/edit`} className="button-ghost">Edit</Link>
-              <button type="button" className="button-danger" onClick={handleDelete} disabled={isDeleting}>
+              <Link to={`/jobs/${job.id}/edit`} className="btn btn--secondary">Edit</Link>
+              <button type="button" className="btn btn--danger" onClick={handleDelete} disabled={isDeleting}>
                 {isDeleting ? 'Deleting…' : 'Delete'}
               </button>
             </div>
           )}
-          {actionError && <p className="form-error">{actionError}</p>}
+          {actionError && <p className="message message--error">{actionError}</p>}
         </aside>
       </div>
     </div>

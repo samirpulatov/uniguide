@@ -105,3 +105,18 @@ export function formatHourlyWage(value: number): string {
 export function formatArea(value: number): string {
   return `${squareMeters.format(value)} m²`;
 }
+
+// Colour family per guide/forum category, used for the card stripe and the topic tiles.
+// Each name maps to a `--<name>-soft` / `--<name>-ink` token pair (violet = accent).
+export type Tint = 'violet' | 'amber' | 'mint' | 'rose';
+
+export const CATEGORY_TINT: Record<GuideCategory, Tint> = {
+  BUREAUCRACY: 'violet',
+  HOUSING: 'amber',
+  STUDIES: 'mint',
+  DAILY_LIFE: 'rose',
+  ENTERTAINMENT: 'rose',
+  TRAVEL: 'amber',
+  HEALTHCARE: 'mint',
+  OTHER: 'violet',
+};

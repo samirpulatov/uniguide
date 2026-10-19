@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { housingApi, type HousingFilters } from '../api/housing';
 import { extractErrorMessage } from '../api/errors';
 import { HousingCard } from '../components/HousingCard';
+import { HomeIcon, LockIcon, PlusIcon, ResetIcon, UsersIcon } from '../components/icons';
 import { CITIES, HOUSE_TYPE_LABELS, HOUSE_TYPES as TYPE_VALUES, formatEnumLabel } from '../constants/enumOptions';
 import type { City, HouseType, HousingResponse } from '../types';
 
@@ -167,53 +168,37 @@ export function HousingPage() {
   const update = (patch: Partial<FilterState>) => setFilters((prev) => ({ ...prev, ...patch }));
 
   return (
-    <div className="housing-page">
-      <section className="housing-hero">
-        <div className="housing-hero-text">
-          <h1 className="housing-hero-title">Find housing</h1>
-          <p className="housing-hero-subtitle">Rooms, apartments and dorm places from students for students.</p>
-          <ul className="housing-features">
+    <div className="page-wide listings-page">
+      <header className="page-head">
+        <div>
+          <h1>Find housing</h1>
+          <p className="page-lead">Rooms, apartments and dorm places — from students, for students.</p>
+          <ul className="feature-row">
             <li>
-              <span className="housing-feature-icon" aria-hidden="true">
-                <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4" /><path d="M4 21a8 8 0 0 1 16 0" /></svg>
-              </span>
-              <div>
-                <strong>Student friendly</strong>
-                <span>Real people, real offers</span>
-              </div>
+              <UsersIcon />
+              <span><strong>Student friendly</strong> · real people, real offers</span>
             </li>
             <li>
-              <span className="housing-feature-icon" aria-hidden="true">
-                <svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2" /><path d="M8 11V7a4 4 0 0 1 8 0v4" /></svg>
-              </span>
-              <div>
-                <strong>Members only</strong>
-                <span>Addresses stay inside UniGuide</span>
-              </div>
+              <LockIcon />
+              <span><strong>Members only</strong> · addresses stay inside UniGuide</span>
             </li>
             <li>
-              <span className="housing-feature-icon" aria-hidden="true">
-                <svg viewBox="0 0 24 24"><path d="M3 11l9-7 9 7" /><path d="M5 10v10h14V10" /></svg>
-              </span>
-              <div>
-                <strong>Find your place</strong>
-                <span>Live, study, connect</span>
-              </div>
+              <HomeIcon />
+              <span><strong>WG, dorm or flat</strong> · filter by warm rent and size</span>
             </li>
           </ul>
         </div>
-        <blockquote className="housing-hero-quote">
-          More than just a place to live — a place to belong.
-          <span className="accent-line" aria-hidden="true" />
-        </blockquote>
-      </section>
-
-      <div className="housing-layout">
-        <aside className={`housing-filters${isMine ? ' housing-filters--off' : ''}`} aria-label="Filters" inert={isMine}>
+        <Link to="/housing/new" className="btn btn--primary btn-pop btn-pop--spin">
+          <PlusIcon />
+          Post listing
+        </Link>
+      </header>
+      <div className="listings-layout">
+        <aside className={`card glass filters-panel${isMine ? ' filters-panel--off' : ''}`} aria-label="Filters" inert={isMine}>
           <div className="hf-header">
             <h2>Filters</h2>
-            <button type="button" className="hf-reset" onClick={() => setFilters(DEFAULT_FILTERS)} disabled={isDefault}>
-              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.3-5.7" /><path d="M4 4v4h4" /></svg>
+            <button type="button" className="btn btn--ghost btn--sm hf-reset" onClick={() => setFilters(DEFAULT_FILTERS)} disabled={isDefault}>
+              <ResetIcon />
               Reset
             </button>
           </div>
@@ -248,7 +233,7 @@ export function HousingPage() {
           <label className="hf-group">
             <span className="hf-label">Location</span>
             <select
-              className="hf-select"
+              className="select"
               value={filters.city}
               onChange={(e) => update({ city: e.target.value as City | '' })}
             >
@@ -270,29 +255,24 @@ export function HousingPage() {
           />
         </aside>
 
-        <section className="housing-results" aria-busy={isLoading}>
-          <div className="housing-toolbar">
+        <section className="listings-results" aria-busy={isLoading}>
+          <div className="listings-toolbar">
             <div className="segmented" role="group" aria-label="Which listings">
               <button type="button" aria-pressed={!isMine} onClick={() => setScope('all')}>All listings</button>
               <button type="button" aria-pressed={isMine} onClick={() => setScope('mine')}>My listings</button>
             </div>
-            <Link to="/housing/new" className="button-primary housing-post-button">
-              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14" /></svg>
-              Post listing
-            </Link>
+            <p className="housing-count">
+              {result === null
+                ? 'Loading places…'
+                : isMine
+                  ? `You have ${housings.length} ${housings.length === 1 ? 'listing' : 'listings'}`
+                  : `${housings.length} ${housings.length === 1 ? 'place matches' : 'places match'} your filters`}
+            </p>
           </div>
 
-          <p className="housing-count">
-            {result === null
-              ? 'Loading places…'
-              : isMine
-                ? `You have ${housings.length} ${housings.length === 1 ? 'listing' : 'listings'}`
-                : `${housings.length} ${housings.length === 1 ? 'place matches' : 'places match'} your filters`}
-          </p>
-
-          {result?.error && <p className="form-error">{result.error}</p>}
+          {result?.error && <p className="message message--error">{result.error}</p>}
           {result && !result.error && housings.length === 0 && (
-            <div className="housing-empty">
+            <div className="empty">
               {isMine ? (
                 <>
                   <strong>You haven't posted anything yet.</strong>
@@ -309,9 +289,9 @@ export function HousingPage() {
             </div>
           )}
 
-          <div className={`housing-grid${isLoading ? ' housing-grid--loading' : ''}`}>
-            {housings.map((housing) => (
-              <HousingCard key={housing.id} housing={housing} />
+          <div className={`listing-grid${isLoading ? ' is-loading' : ''}`}>
+            {housings.map((housing, i) => (
+              <HousingCard key={housing.id} housing={housing} index={i} />
             ))}
           </div>
         </section>

@@ -7,5 +7,5 @@ const LABELS: Record<GuideStatus, string> = {
 };
 
 export function StatusBadge({ status }: { status: GuideStatus }) {
-  return <span className={`status-badge status-badge--${status.toLowerCase()}`}>{LABELS[status]}</span>;
+  return <span className={`badge badge--${status.toLowerCase()}`}>{LABELS[status]}</span>;
 }

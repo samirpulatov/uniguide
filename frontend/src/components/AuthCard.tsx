@@ -1,17 +1,5 @@
 import { useState, type InputHTMLAttributes, type ReactNode, type SelectHTMLAttributes } from 'react';
 
-// Decorative background layer: soft glows, large thin arcs and dot grids (pure CSS/SVG, no images)
-export function PageDecor() {
-  return (
-    <div className="page-decor" aria-hidden="true">
-      <span className="decor-arc decor-arc--left" />
-      <span className="decor-arc decor-arc--right" />
-      <span className="decor-dots decor-dots--top" />
-      <span className="decor-dots decor-dots--bottom" />
-    </div>
-  );
-}
-
 type AuthCardProps = {
   title: string;
   subtitle: string;
@@ -24,7 +12,6 @@ export function AuthCard({ title, subtitle, helper, children }: AuthCardProps) {
     <div className="auth-shell">
       {/* full-viewport photo behind everything, toned down to the night palette in CSS */}
       <div className="auth-bg" aria-hidden="true" />
-      <PageDecor />
       <aside className="auth-intro">
         <h2 className="auth-intro-title">
           Your Study <span className="text-accent">Companion</span>

@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { jobsApi, type JobFilters } from '../api/jobs';
 import { extractErrorMessage } from '../api/errors';
 import { JobCard } from '../components/JobCard';
+import { BriefcaseIcon, ClockIcon, PlusIcon, ResetIcon, UsersIcon } from '../components/icons';
 import { useAuth } from '../context/useAuth';
 import { CITIES, JOB_TYPE_LABELS, JOB_TYPES as TYPE_VALUES, formatEnumLabel } from '../constants/enumOptions';
 import type { City, JobType, JobVacancyResponse } from '../types';
@@ -82,53 +83,37 @@ export function JobsPage() {
   const update = (patch: Partial<FilterState>) => setFilters((prev) => ({ ...prev, ...patch }));
 
   return (
-    <div className="housing-page">
-      <section className="housing-hero">
-        <div className="housing-hero-text">
-          <h1 className="housing-hero-title">Find a job</h1>
-          <p className="housing-hero-subtitle">Minijobs, Werkstudent positions and internships next to your studies.</p>
-          <ul className="housing-features">
+    <div className="page-wide listings-page">
+      <header className="page-head">
+        <div>
+          <h1>Find a job</h1>
+          <p className="page-lead">Minijobs, Werkstudent positions and internships that fit next to your studies.</p>
+          <ul className="feature-row">
             <li>
-              <span className="housing-feature-icon" aria-hidden="true">
-                <svg viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2" /><path d="M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2" /></svg>
-              </span>
-              <div>
-                <strong>Student jobs</strong>
-                <span>Made to fit a study plan</span>
-              </div>
+              <BriefcaseIcon />
+              <span><strong>Student jobs</strong> · made to fit a study plan</span>
             </li>
             <li>
-              <span className="housing-feature-icon" aria-hidden="true">
-                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" /></svg>
-              </span>
-              <div>
-                <strong>Lohn per hour</strong>
-                <span>Compare offers at a glance</span>
-              </div>
+              <ClockIcon />
+              <span><strong>Lohn per hour</strong> · compare offers at a glance</span>
             </li>
             <li>
-              <span className="housing-feature-icon" aria-hidden="true">
-                <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4" /><path d="M4 21a8 8 0 0 1 16 0" /></svg>
-              </span>
-              <div>
-                <strong>From the community</strong>
-                <span>Posted by students and locals</span>
-              </div>
+              <UsersIcon />
+              <span><strong>From the community</strong> · posted by students and locals</span>
             </li>
           </ul>
         </div>
-        <blockquote className="housing-hero-quote">
-          Earn, learn and find your way in Germany.
-          <span className="accent-line" aria-hidden="true" />
-        </blockquote>
-      </section>
-
-      <div className="housing-layout">
-        <aside className={`housing-filters${isMine ? ' housing-filters--off' : ''}`} aria-label="Filters" inert={isMine}>
+        <Link to={user ? '/jobs/new' : '/login'} className="btn btn--primary btn-pop btn-pop--spin">
+          <PlusIcon />
+          {user ? 'Post a job' : 'Log in to post a job'}
+        </Link>
+      </header>
+      <div className="listings-layout">
+        <aside className={`card glass filters-panel${isMine ? ' filters-panel--off' : ''}`} aria-label="Filters" inert={isMine}>
           <div className="hf-header">
             <h2>Filters</h2>
-            <button type="button" className="hf-reset" onClick={() => setFilters(DEFAULT_FILTERS)} disabled={isDefault}>
-              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12a8 8 0 1 0 2.3-5.7" /><path d="M4 4v4h4" /></svg>
+            <button type="button" className="btn btn--ghost btn--sm hf-reset" onClick={() => setFilters(DEFAULT_FILTERS)} disabled={isDefault}>
+              <ResetIcon />
               Reset
             </button>
           </div>
@@ -153,7 +138,7 @@ export function JobsPage() {
           <label className="hf-group">
             <span className="hf-label">Location</span>
             <select
-              className="hf-select"
+              className="select"
               value={filters.city}
               onChange={(e) => update({ city: e.target.value as City | '' })}
             >
@@ -184,33 +169,26 @@ export function JobsPage() {
           </fieldset>
         </aside>
 
-        <section className="housing-results" aria-busy={isLoading}>
-          <div className="housing-toolbar">
-            {user ? (
+        <section className="listings-results" aria-busy={isLoading}>
+          <div className="listings-toolbar">
+            {user && (
               <div className="segmented" role="group" aria-label="Which vacancies">
                 <button type="button" aria-pressed={!isMine} onClick={() => setScope('all')}>All jobs</button>
                 <button type="button" aria-pressed={isMine} onClick={() => setScope('mine')}>My vacancies</button>
               </div>
-            ) : (
-              <span />
             )}
-            <Link to={user ? '/jobs/new' : '/login'} className="button-primary housing-post-button">
-              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14" /></svg>
-              {user ? 'Post a job' : 'Log in to post a job'}
-            </Link>
+            <p className="housing-count">
+              {result === null
+                ? 'Loading jobs…'
+                : isMine
+                  ? `You have ${jobs.length} ${jobs.length === 1 ? 'vacancy' : 'vacancies'}`
+                  : `${jobs.length} ${jobs.length === 1 ? 'job matches' : 'jobs match'} your filters`}
+            </p>
           </div>
 
-          <p className="housing-count">
-            {result === null
-              ? 'Loading jobs…'
-              : isMine
-                ? `You have ${jobs.length} ${jobs.length === 1 ? 'vacancy' : 'vacancies'}`
-                : `${jobs.length} ${jobs.length === 1 ? 'job matches' : 'jobs match'} your filters`}
-          </p>
-
-          {result?.error && <p className="form-error">{result.error}</p>}
+          {result?.error && <p className="message message--error">{result.error}</p>}
           {result && !result.error && jobs.length === 0 && (
-            <div className="housing-empty">
+            <div className="empty">
               {isMine ? (
                 <>
                   <strong>You haven't posted a job yet.</strong>
@@ -227,9 +205,9 @@ export function JobsPage() {
             </div>
           )}
 
-          <div className={`housing-grid${isLoading ? ' housing-grid--loading' : ''}`}>
-            {jobs.map((job) => (
-              <JobCard key={job.id} job={job} />
+          <div className={`listing-grid${isLoading ? ' is-loading' : ''}`}>
+            {jobs.map((job, i) => (
+              <JobCard key={job.id} job={job} index={i} />
             ))}
           </div>
         </section>

@@ -2,6 +2,7 @@ import { BrowserRouter, Route, Routes, useLocation } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { Navbar } from './components/Navbar';
+import { LivingBackground } from './components/LivingBackground';
 import { GuidesPage } from './pages/GuidesPage';
 import { GuideDetailPage } from './pages/GuideDetailPage';
 import { GuideFormPage } from './pages/GuideFormPage';
@@ -12,14 +13,12 @@ import { LoginPage } from './pages/LoginPage';
 import { RegisterPage } from './pages/RegisterPage';
 import { OnboardingPage } from './pages/OnboardingPage';
 import { DashboardPage } from './pages/DashboardPage';
-import { DocumentsPage } from './pages/DocumentsPage';
 import { HousingPage } from './pages/HousingPage';
 import { HousingDetailPage } from './pages/HousingDetailPage';
 import { HousingFormPage } from './pages/HousingFormPage';
 import { JobsPage } from './pages/JobsPage';
 import { JobDetailPage } from './pages/JobDetailPage';
 import { JobFormPage } from './pages/JobFormPage';
-import { CoursesPage } from './pages/CoursesPage';
 import { ForumPage } from './pages/ForumPage';
 import { ForumThreadPage } from './pages/ForumThreadPage';
 import { ForumThreadFormPage } from './pages/ForumThreadFormPage';
@@ -31,6 +30,7 @@ function AppShell() {
 
   return (
     <>
+      <LivingBackground variant={location.pathname === '/' ? 'home' : 'page'} />
       {!hideNav && <Navbar />}
       <main className="app-content">
         <Routes>
@@ -53,14 +53,12 @@ function AppShell() {
 
             <Route path="/onboarding" element={<OnboardingPage />} />
             <Route path="/dashboard" element={<DashboardPage />} />
-            <Route path="/documents" element={<DocumentsPage />} />
             <Route path="/housing" element={<HousingPage />} />
             <Route path="/housing/new" element={<HousingFormPage />} />
             <Route path="/housing/:id" element={<HousingDetailPage />} />
             <Route path="/housing/:id/edit" element={<HousingFormPage />} />
             <Route path="/jobs/new" element={<JobFormPage />} />
             <Route path="/jobs/:id/edit" element={<JobFormPage />} />
-            <Route path="/courses" element={<CoursesPage />} />
             <Route path="/forum/new" element={<ForumThreadFormPage />} />
             <Route path="/forum/:id/edit" element={<ForumThreadFormPage />} />
           </Route>

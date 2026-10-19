@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { guidesApi } from '../api/guides';
 import { extractErrorMessage } from '../api/errors';
 import { GuideCard } from '../components/GuideCard';
+import { PlusIcon } from '../components/icons';
 import type { GuideCreationResponse } from '../types';
 
 export function MyGuidesPage() {
@@ -19,19 +20,28 @@ export function MyGuidesPage() {
   }, []);
 
   return (
-    <div className="page">
-      <div className="page-header">
-        <h1>My guides</h1>
-        <Link to="/guides/new" className="button-link">+ New guide</Link>
-      </div>
+    <div className="page-wide">
+      <header className="page-head">
+        <div>
+          <h1>My guides</h1>
+          <p className="page-lead">Everything you've written, with its review status.</p>
+        </div>
+        <Link to="/guides/new" className="btn btn--primary">
+          <PlusIcon />
+          New guide
+        </Link>
+      </header>
 
       {isLoading && <p className="status-message">Loading...</p>}
-      {error && <p className="form-error">{error}</p>}
+      {error && <p className="message message--error">{error}</p>}
       {!isLoading && !error && guides.length === 0 && (
-        <p className="status-message">You haven't published any guides yet.</p>
+        <div className="empty">
+          <strong>You haven't written a guide yet.</strong>
+          <span>Share what you learned — <Link to="/guides/new">write your first guide</Link>.</span>
+        </div>
       )}
 
-      <div className="guide-list">
+      <div className="card-grid">
         {guides.map((guide) => (
           <GuideCard key={guide.id} guide={guide} showStatus />
         ))}

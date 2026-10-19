@@ -1,8 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type CSSProperties } from 'react';
 import { Link } from 'react-router-dom';
 import { forumApi, type ForumFilters } from '../api/forum';
 import { extractErrorMessage } from '../api/errors';
 import { useAuth } from '../context/useAuth';
+import { PlusIcon } from '../components/icons';
 import {
   CITIES,
   FORUM_CATEGORIES,
@@ -51,37 +52,46 @@ export function ForumPage() {
 
   return (
     <div className="page-forum">
-      <div className="page-header" style={{ marginBottom: '0.4rem' }}>
-        <h1>Community forum</h1>
-        {user && (
-          <Link to="/forum/new" className="button-outline">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M12 5v14M5 12h14" />
-            </svg>
+      <header className="page-head">
+        <div>
+          <h1>Community</h1>
+          <p className="page-lead">Ask questions, share what worked, meet people at your university.</p>
+        </div>
+        {user ? (
+          <Link to="/forum/new" className="btn btn--primary">
+            <PlusIcon />
             New thread
           </Link>
+        ) : (
+          <Link to="/login" state={{ from: { pathname: '/forum' } }} className="btn btn--secondary">
+            Log in to post
+          </Link>
         )}
-      </div>
-      <p className="status-message" style={{ display: 'block', margin: '0 0 1.5rem' }}>
-        Ask questions, share what worked, meet people at your university.
-      </p>
+      </header>
 
-      <div className="filters">
+      <div className="forum-toolbar">
         {user && (
-          <select value={onlyMine ? 'mine' : 'all'} onChange={(e) => setOnlyMine(e.target.value === 'mine')}>
-            <option value="all">All threads</option>
-            <option value="mine">My threads</option>
-          </select>
+          <div className="segmented" role="group" aria-label="Which threads">
+            <button type="button" aria-pressed={!onlyMine} onClick={() => setOnlyMine(false)}>All threads</button>
+            <button type="button" aria-pressed={onlyMine} onClick={() => setOnlyMine(true)}>My threads</button>
+          </div>
         )}
         {!showMine && (
-          <>
-            <select value={filters.city ?? ''} onChange={(e) => handleCityChange(e.target.value as City | '')}>
+          <div className="filter-selects">
+            <select
+              className="select"
+              aria-label="City"
+              value={filters.city ?? ''}
+              onChange={(e) => handleCityChange(e.target.value as City | '')}
+            >
               <option value="">All cities</option>
               {CITIES.map((city) => (
                 <option key={city} value={city}>{formatEnumLabel(city)}</option>
               ))}
             </select>
             <select
+              className="select"
+              aria-label="University"
               value={filters.university ?? ''}
               onChange={(e) =>
                 setFilters((prev) => ({ ...prev, university: (e.target.value || undefined) as University | undefined }))
@@ -93,6 +103,8 @@ export function ForumPage() {
               ))}
             </select>
             <select
+              className="select"
+              aria-label="Category"
               value={filters.category ?? ''}
               onChange={(e) =>
                 setFilters((prev) => ({ ...prev, category: (e.target.value || undefined) as ForumCategory | undefined }))
@@ -103,37 +115,45 @@ export function ForumPage() {
                 <option key={category} value={category}>{formatEnumLabel(category)}</option>
               ))}
             </select>
-          </>
+          </div>
         )}
       </div>
 
-      {isLoading && <p className="status-message">Loading threads...</p>}
-      {error && <p className="form-error">{error}</p>}
+      {isLoading && <p className="status-message">Loading threads…</p>}
+      {error && <p className="message message--error">{error}</p>}
       {!isLoading && !error && threads.length === 0 && (
-        <p className="status-message">
-          {showMine ? "You haven't started any threads yet." : 'No threads match these filters yet.'}
-        </p>
+        <div className="empty">
+          <strong>{showMine ? "You haven't started any threads yet." : 'No threads match these filters yet.'}</strong>
+          {user && (
+            <span>
+              <Link to="/forum/new">Start a thread</Link> — someone has probably wondered the same.
+            </span>
+          )}
+        </div>
       )}
 
-      <div className="forum-thread-list">
-        {threads.map((thread) => (
-          <Link key={thread.id} to={`/forum/${thread.id}`} className="forum-thread-row">
-            <div className="forum-avatar">{initialsOf(thread.authorName)}</div>
-            <div style={{ flex: 1, minWidth: 0 }}>
-              <div className="forum-thread-title">{thread.title}</div>
-              <div className="forum-thread-excerpt">{thread.content}</div>
-              <div className="forum-thread-tags">
-                {thread.forumCategory && <span className="forum-tag">{formatEnumLabel(thread.forumCategory)}</span>}
-                {thread.city && <span className="forum-tag forum-tag--outline">{formatEnumLabel(thread.city)}</span>}
-                {thread.university && (
-                  <span className="forum-tag forum-tag--outline">{formatEnumLabel(thread.university)}</span>
-                )}
-                {!thread.forumCategory && !thread.city && <span className="forum-tag">Announcement</span>}
+      <div className="thread-list">
+        {threads.map((thread, i) => (
+          <Link
+            key={thread.id}
+            to={`/forum/${thread.id}`}
+            className="card thread-row thread-row--live rise"
+            style={{ '--i': Math.min(i, 8) } as CSSProperties}
+          >
+            <span className="avatar" aria-hidden="true">{initialsOf(thread.authorName)}</span>
+            <div className="thread-row-main">
+              <h3 className="thread-row-title">{thread.title}</h3>
+              <p className="thread-row-excerpt">{thread.content}</p>
+              <div className="thread-row-tags">
+                {thread.forumCategory && <span className="tag">{formatEnumLabel(thread.forumCategory)}</span>}
+                {thread.city && <span className="tag tag--outline">{formatEnumLabel(thread.city)}</span>}
+                {thread.university && <span className="tag tag--outline">{formatEnumLabel(thread.university)}</span>}
+                {!thread.forumCategory && !thread.city && <span className="tag tag--neutral">Announcement</span>}
               </div>
             </div>
-            <div className="forum-thread-stats">
-              <div className="forum-thread-replies">{thread.authorName}</div>
-              <div className="forum-thread-time">{formatDateTime(thread.createdAt)}</div>
+            <div className="thread-row-side">
+              <strong>{thread.authorName}</strong>
+              {formatDateTime(thread.createdAt)}
             </div>
           </Link>
         ))}

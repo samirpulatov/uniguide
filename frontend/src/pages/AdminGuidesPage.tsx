@@ -89,7 +89,7 @@ export function AdminGuidesPage() {
       <div className="admin-guide-list">
         {reviewed.map((guide) => (
           <div key={guide.id} className="admin-guide-card">
-            <div className="guide-card-header">
+            <div className="guide-card-top">
               <h3>{guide.title}</h3>
               <StatusBadge status={guide.status} />
             </div>

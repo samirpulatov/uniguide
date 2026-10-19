@@ -1,11 +1,17 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type CSSProperties } from 'react';
 import { Link } from 'react-router-dom';
 import { housingPhotosApi } from '../api/housingPhotos';
 import { HOUSE_TYPE_LABELS, formatArea, formatEnumLabel, formatEuro, initialsOf, timeAgo } from '../constants/enumOptions';
 import { PhotoCarousel } from './PhotoCarousel';
+import { ArrowRightIcon, PinIcon } from './icons';
 import type { HousingPhotoResponse, HousingResponse } from '../types';
 
-export function HousingCard({ housing }: { housing: HousingResponse }) {
+// listings younger than a day get a "New today" badge
+function isFresh(createdAt: string): boolean {
+  return Date.now() - new Date(createdAt).getTime() < 86_400_000;
+}
+
+export function HousingCard({ housing, index = 0 }: { housing: HousingResponse; index?: number }) {
   // HousingResponse has no photos yet, so every card asks for its own list
   const [photos, setPhotos] = useState<HousingPhotoResponse[] | null>(null);
 
@@ -27,39 +33,40 @@ export function HousingCard({ housing }: { housing: HousingResponse }) {
 
   return (
     // the title link stretches over the whole card (::after), the carousel controls sit above it
-    <article className="housing-card">
-      <PhotoCarousel photos={photos} alt={housing.title} className="housing-media" />
+    <article className="card listing-card listing-card--live rise" style={{ '--i': Math.min(index, 8) } as CSSProperties}>
+      <div className="listing-media-wrap">
+        <PhotoCarousel photos={photos} alt={housing.title} className="listing-media" />
+        {isFresh(housing.createdAt) && <span className="listing-new">New today</span>}
+        <span className="listing-price-chip">
+          {formatEuro(housing.warmRent)}
+          <small>/mo warm</small>
+        </span>
+      </div>
 
-      <div className="housing-body">
-        <h3 className="housing-title">
-          <Link to={`/housing/${housing.id}`} className="housing-card-link">{housing.title}</Link>
+      <div className="listing-body">
+        <div className="listing-tags">
+          <span className="tag tag--neutral">{HOUSE_TYPE_LABELS[housing.houseType]}</span>
+        </div>
+        <h3 className="listing-title">
+          <Link to={`/housing/${housing.id}`}>{housing.title}</Link>
         </h3>
-        <div className="housing-meta">
-          <svg className="housing-icon" viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z" />
-            <circle cx="12" cy="9.5" r="2.5" />
-          </svg>
-          {formatEnumLabel(housing.city)} · {formatArea(housing.area)}
-        </div>
-        <div className="housing-tags">
-          <span className="housing-tag">{HOUSE_TYPE_LABELS[housing.houseType]}</span>
+        <div className="listing-meta">
+          <PinIcon />
+          {formatEnumLabel(housing.city)} · {formatArea(housing.area)} · {formatEuro(housing.coldRent)} cold
         </div>
 
-        <div className="housing-footer">
-          <div>
-            <div className="housing-price">
-              {formatEuro(housing.warmRent)}
-              <span className="housing-price-unit">/mo</span>
-            </div>
-            <div className="housing-price-note">warm · {formatEuro(housing.coldRent)} cold</div>
-          </div>
-          <div className="housing-author">
-            <span className="housing-avatar" aria-hidden="true">{initialsOf(housing.authorName)}</span>
+        <div className="listing-footer">
+          <div className="listing-author">
+            <span className="avatar avatar--sm" aria-hidden="true">{initialsOf(housing.authorName)}</span>
             <div>
-              <div className="housing-author-name">{housing.authorName}</div>
-              <div className="housing-author-date">{timeAgo(housing.createdAt)}</div>
+              <div className="listing-author-name">{housing.authorName}</div>
+              <div className="listing-author-date">{timeAgo(housing.createdAt)}</div>
             </div>
           </div>
+          <span className="listing-view" aria-hidden="true">
+            View
+            <ArrowRightIcon />
+          </span>
         </div>
       </div>
     </article>

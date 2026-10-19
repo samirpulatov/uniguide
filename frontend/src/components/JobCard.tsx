@@ -1,37 +1,46 @@
+import type { CSSProperties } from 'react';
 import { Link } from 'react-router-dom';
 import { JOB_TYPE_LABELS, formatEnumLabel, formatHourlyWage, initialsOf, timeAgo } from '../constants/enumOptions';
+import { ArrowRightIcon, BriefcaseIcon, PinIcon } from './icons';
 import type { JobVacancyResponse } from '../types';
 
-export function JobCard({ job }: { job: JobVacancyResponse }) {
+function isFresh(createdAt: string): boolean {
+  return Date.now() - new Date(createdAt).getTime() < 86_400_000;
+}
+
+export function JobCard({ job, index = 0 }: { job: JobVacancyResponse; index?: number }) {
   return (
     // same pattern as HousingCard: the title link stretches over the whole card (::after)
-    <article className="housing-card job-card">
-      <div className="housing-body">
-        <div className="housing-tags">
-          <span className="housing-tag">{JOB_TYPE_LABELS[job.jobType]}</span>
-        </div>
-        <h3 className="housing-title">
-          <Link to={`/jobs/${job.id}`} className="housing-card-link">{job.title}</Link>
+    <article className="card listing-card listing-card--live job-card rise" style={{ '--i': Math.min(index, 8) } as CSSProperties}>
+      <div className="job-card-head">
+        <span className="job-card-icon" aria-hidden="true"><BriefcaseIcon /></span>
+        <span className="tag tag--neutral">{JOB_TYPE_LABELS[job.jobType]}</span>
+        {isFresh(job.createdAt) && <span className="listing-new listing-new--inline">New today</span>}
+        <span className="job-wage">{formatHourlyWage(job.salaryPerHour)}</span>
+      </div>
+      <div className="listing-body">
+        <h3 className="listing-title">
+          <Link to={`/jobs/${job.id}`}>{job.title}</Link>
         </h3>
-        <div className="job-company">{job.company}</div>
-        <div className="housing-meta">
-          <svg className="housing-icon" viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z" />
-            <circle cx="12" cy="9.5" r="2.5" />
-          </svg>
+        <div className="listing-meta listing-meta--strong">{job.company}</div>
+        <div className="listing-meta">
+          <PinIcon />
           {formatEnumLabel(job.city)}
         </div>
-        <p className="job-snippet">{job.description}</p>
+        <p className="listing-snippet">{job.description}</p>
 
-        <div className="housing-footer">
-          <div className="housing-price">{formatHourlyWage(job.salaryPerHour)}</div>
-          <div className="housing-author">
-            <span className="housing-avatar" aria-hidden="true">{initialsOf(job.authorName)}</span>
+        <div className="listing-footer">
+          <div className="listing-author">
+            <span className="avatar avatar--sm" aria-hidden="true">{initialsOf(job.authorName)}</span>
             <div>
-              <div className="housing-author-name">{job.authorName}</div>
-              <div className="housing-author-date">{timeAgo(job.createdAt)}</div>
+              <div className="listing-author-name">{job.authorName}</div>
+              <div className="listing-author-date">{timeAgo(job.createdAt)}</div>
             </div>
           </div>
+          <span className="listing-view" aria-hidden="true">
+            View
+            <ArrowRightIcon />
+          </span>
         </div>
       </div>
     </article>

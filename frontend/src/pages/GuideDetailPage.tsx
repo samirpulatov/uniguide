@@ -4,7 +4,8 @@ import { guidesApi } from '../api/guides';
 import { extractErrorMessage } from '../api/errors';
 import { useAuth } from '../context/useAuth';
 import { StatusBadge } from '../components/StatusBadge';
-import { formatEnumLabel } from '../constants/enumOptions';
+import { formatDateTime, formatEnumLabel, initialsOf } from '../constants/enumOptions';
+import { ArrowLeftIcon, EditIcon, TrashIcon } from '../components/icons';
 import type { GuideCreationResponse } from '../types';
 
 export function GuideDetailPage() {
@@ -51,36 +52,52 @@ export function GuideDetailPage() {
   };
 
   if (isLoading) return <p className="status-message">Loading...</p>;
-  if (error) return <p className="form-error">{error}</p>;
+  if (error) return <p className="message message--error page-reading">{error}</p>;
   if (!guide) return null;
 
   const isAuthor = user?.username === guide.authorName;
 
   return (
-    <div className="page guide-detail">
-      <div className="guide-detail-header">
-        <h1>{guide.title}</h1>
-        {guide.status !== 'APPROVED' && <StatusBadge status={guide.status} />}
-      </div>
-      <p className="guide-card-meta">
-        {formatEnumLabel(guide.category)}
-        {guide.city ? ` · ${formatEnumLabel(guide.city)}` : ''}
-        {guide.university ? ` · ${formatEnumLabel(guide.university)}` : ''}
-      </p>
-      <p className="guide-card-author">by {guide.authorName}</p>
+    <div className="page-reading guide-detail">
+      <Link to="/" className="back-link">
+        <ArrowLeftIcon />
+        All guides
+      </Link>
 
-      {guide.status === 'REJECTED' && guide.rejectionReason && (
-        <p className="form-error">Rejection reason: {guide.rejectionReason}</p>
-      )}
-
-      <div className="guide-content">{guide.content}</div>
-
-      {isAuthor && (
-        <div className="guide-actions">
-          <Link to={`/guides/${guide.id}/edit`}>Edit</Link>
-          <button type="button" onClick={handleDelete}>Delete</button>
+      <article className="card reading-card rise">
+        <div className="guide-detail-top">
+          <span className="tag">{formatEnumLabel(guide.category)}</span>
+          {guide.city && <span className="tag tag--outline">{formatEnumLabel(guide.city)}</span>}
+          {guide.university && <span className="tag tag--outline">{formatEnumLabel(guide.university)}</span>}
+          {guide.status !== 'APPROVED' && <StatusBadge status={guide.status} />}
         </div>
-      )}
+        <h1 className="reading-title">{guide.title}</h1>
+        <div className="byline">
+          <span className="avatar avatar--sm" aria-hidden="true">{initialsOf(guide.authorName)}</span>
+          <span>
+            <strong>{guide.authorName}</strong> · {formatDateTime(guide.createdAt)}
+          </span>
+        </div>
+
+        {guide.status === 'REJECTED' && guide.rejectionReason && (
+          <p className="message message--error">Rejection reason: {guide.rejectionReason}</p>
+        )}
+
+        <div className="guide-content">{guide.content}</div>
+
+        {isAuthor && (
+          <div className="reading-actions">
+            <Link to={`/guides/${guide.id}/edit`} className="btn btn--secondary btn--sm">
+              <EditIcon />
+              Edit
+            </Link>
+            <button type="button" className="btn btn--danger btn--sm" onClick={handleDelete}>
+              <TrashIcon />
+              Delete
+            </button>
+          </div>
+        )}
+      </article>
     </div>
   );
 }
