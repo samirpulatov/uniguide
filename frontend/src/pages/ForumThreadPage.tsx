@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { forumApi } from '../api/forum';
 import { extractErrorMessage } from '../api/errors';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../context/useAuth';
 import { ForumReplyItem } from '../components/ForumReplyItem';
 import { formatDateTime, formatEnumLabel, initialsOf } from '../constants/enumOptions';
 import type { ForumReplyResponse, ForumThreadResponse } from '../types';

@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { guidesApi } from '../api/guides';
 import { extractErrorMessage } from '../api/errors';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../context/useAuth';
 import { StatusBadge } from '../components/StatusBadge';
 import { formatEnumLabel } from '../constants/enumOptions';
 import type { GuideCreationResponse } from '../types';
@@ -12,29 +12,33 @@ export function GuideDetailPage() {
   const navigate = useNavigate();
   const { user } = useAuth();
 
-  const [guide, setGuide] = useState<GuideCreationResponse | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  // `id` the result belongs to, so a new id shows "Loading" instead of the previous guide
+  const [result, setResult] = useState<{
+    id: string;
+    guide: GuideCreationResponse | null;
+    error: string | null;
+  } | null>(null);
+  const [actionError, setActionError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!id) return;
     let cancelled = false;
-    setIsLoading(true);
     guidesApi
       .getById(Number(id))
-      .then((data) => {
-        if (!cancelled) setGuide(data);
+      .then((guide) => {
+        if (!cancelled) setResult({ id, guide, error: null });
       })
       .catch((err) => {
-        if (!cancelled) setError(extractErrorMessage(err, 'Guide not found.'));
-      })
-      .finally(() => {
-        if (!cancelled) setIsLoading(false);
+        if (!cancelled) setResult({ id, guide: null, error: extractErrorMessage(err, 'Guide not found.') });
       });
     return () => {
       cancelled = true;
     };
   }, [id]);
+
+  const isLoading = result?.id !== id;
+  const guide = result?.guide ?? null;
+  const error = result?.error ?? actionError;
 
   const handleDelete = async () => {
     if (!guide || !window.confirm('Delete this guide? This cannot be undone.')) return;
@@ -42,7 +46,7 @@ export function GuideDetailPage() {
       await guidesApi.remove(guide.id);
       navigate('/my-guides', { replace: true });
     } catch (err) {
-      setError(extractErrorMessage(err, 'Failed to delete the guide.'));
+      setActionError(extractErrorMessage(err, 'Failed to delete the guide.'));
     }
   };
 

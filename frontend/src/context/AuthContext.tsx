@@ -1,25 +1,15 @@
-import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from 'react';
+import { useCallback, useEffect, useState, type ReactNode } from 'react';
 import { authApi } from '../api/auth';
 import { usersApi } from '../api/users';
 import { tokenStorage } from '../api/tokenStorage';
+import { AuthContext } from './useAuth';
 import type { GetUserResponse, LoginRequest, RegisterRequest } from '../types';
-
-interface AuthContextValue {
-  user: GetUserResponse | null;
-  isLoading: boolean;
-  login: (request: LoginRequest) => Promise<void>;
-  register: (request: RegisterRequest) => Promise<void>;
-  logout: () => void;
-  refreshUser: () => Promise<void>;
-  setUser: (user: GetUserResponse) => void;
-}
-
-const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<GetUserResponse | null>(null);
-  // Starts true: on first load we don't know yet whether a stored token is still valid.
-  const [isLoading, setIsLoading] = useState(true);
+  // Without a stored token there is nothing to check, so no loading phase at all.
+  // With one we don't know yet whether it is still valid.
+  const [isLoading, setIsLoading] = useState(() => tokenStorage.getAccessToken() !== null);
 
   const refreshUser = useCallback(async () => {
     if (!tokenStorage.getAccessToken()) {
@@ -37,9 +27,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
+  // initial session check: state is only set in the promise callbacks, never synchronously
   useEffect(() => {
-    refreshUser().finally(() => setIsLoading(false));
-  }, [refreshUser]);
+    if (!tokenStorage.getAccessToken()) return;
+    usersApi
+      .getMe()
+      .then(setUser)
+      .catch(() => {
+        tokenStorage.clear();
+        setUser(null);
+      })
+      .finally(() => setIsLoading(false));
+  }, []);
 
   const login = useCallback(async (request: LoginRequest) => {
     const tokens = await authApi.login(request);
@@ -63,12 +62,4 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       {children}
     </AuthContext.Provider>
   );
-}
-
-export function useAuth(): AuthContextValue {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
-  return context;
 }

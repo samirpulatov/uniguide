@@ -1,6 +1,6 @@
 import { useState, type FormEvent } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../context/useAuth';
 import { extractErrorMessage } from '../api/errors';
 import { AuthCard, IconInput, PasswordInput, UserIcon } from '../components/AuthCard';
 

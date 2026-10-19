@@ -4,36 +4,38 @@ import { guidesApi, type GuideFilters } from '../api/guides';
 import { extractErrorMessage } from '../api/errors';
 import { GuideCard } from '../components/GuideCard';
 import { PageDecor } from '../components/AuthCard';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../context/useAuth';
 import { CITIES, GUIDE_CATEGORIES, formatEnumLabel, universitiesForCity } from '../constants/enumOptions';
 import type { City, GuideCategory, GuideCreationResponse, University } from '../types';
 
 export function GuidesPage() {
   const { user } = useAuth();
   const [filters, setFilters] = useState<GuideFilters>({});
-  const [guides, setGuides] = useState<GuideCreationResponse[]>([]);
-  const [error, setError] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  // remembers which filters the result belongs to: while it differs from `filters`, a request is running
+  const [result, setResult] = useState<{
+    filters: GuideFilters;
+    guides: GuideCreationResponse[];
+    error: string | null;
+  } | null>(null);
 
   useEffect(() => {
     let cancelled = false;
-    setIsLoading(true);
-    setError(null);
     guidesApi
       .getAll(filters)
-      .then((data) => {
-        if (!cancelled) setGuides(data);
+      .then((guides) => {
+        if (!cancelled) setResult({ filters, guides, error: null });
       })
       .catch((err) => {
-        if (!cancelled) setError(extractErrorMessage(err, 'Failed to load guides.'));
-      })
-      .finally(() => {
-        if (!cancelled) setIsLoading(false);
+        if (!cancelled) setResult({ filters, guides: [], error: extractErrorMessage(err, 'Failed to load guides.') });
       });
     return () => {
       cancelled = true;
     };
   }, [filters]);
+
+  const isLoading = result?.filters !== filters;
+  const guides = result?.guides ?? [];
+  const error = result?.error ?? null;
 
   const handleCityChange = (city: City | '') => {
     setFilters((prev) => ({

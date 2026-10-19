@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { forumApi, type ForumFilters } from '../api/forum';
 import { extractErrorMessage } from '../api/errors';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../context/useAuth';
 import {
   CITIES,
   FORUM_CATEGORIES,

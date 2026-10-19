@@ -12,11 +12,15 @@ export function AdminGuidesPage() {
   const [rejectionDrafts, setRejectionDrafts] = useState<Record<number, string>>({});
   const [actionError, setActionError] = useState<string | null>(null);
 
+  // state is only set in the callbacks, so this is safe to call from the effect;
+  // the first load shows "Loading", a reload after approve/reject keeps the list on screen
   const load = () => {
-    setIsLoading(true);
     adminGuidesApi
       .getAll()
-      .then(setGuides)
+      .then((data) => {
+        setGuides(data);
+        setError(null);
+      })
       .catch((err) => setError(extractErrorMessage(err, 'Failed to load guides.')))
       .finally(() => setIsLoading(false));
   };

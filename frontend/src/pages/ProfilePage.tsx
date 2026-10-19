@@ -2,7 +2,7 @@ import { useState, type FormEvent } from 'react';
 import { usersApi } from '../api/users';
 import { tokenStorage } from '../api/tokenStorage';
 import { extractErrorMessage } from '../api/errors';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../context/useAuth';
 import { CITIES, UNIVERSITIES, formatEnumLabel, universitiesForCity } from '../constants/enumOptions';
 import type { City, UpdateUserRequest, University } from '../types';
 import {
