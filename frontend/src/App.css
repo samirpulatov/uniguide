@@ -1592,6 +1592,7 @@ button[type='submit']:disabled {
 
 /* Card */
 .housing-card {
+  position: relative;
   border-radius: var(--radius-lg);
   background: var(--surface);
   border: 1px solid var(--border);
@@ -1606,13 +1607,39 @@ button[type='submit']:disabled {
   transform: translateY(-2px);
 }
 
+.housing-card:focus-within {
+  border-color: var(--accent-border);
+}
+
+/* the title link covers the whole card, so the card is clickable without nesting buttons in a link */
+.housing-card-link {
+  color: inherit;
+  text-decoration: none;
+}
+
+.housing-card-link::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+.housing-card-link:focus-visible {
+  outline: none;
+}
+
 .housing-media {
-  position: relative;
   aspect-ratio: 16 / 10;
+}
+
+/* Photo carousel (card + detail page): one photo, prev/next arrows, dots */
+.photo-carousel {
+  position: relative;
+  overflow: hidden;
   background: var(--bg-deep);
 }
 
-.housing-media-img {
+.photo-carousel-img {
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -1622,12 +1649,69 @@ button[type='submit']:disabled {
   color: var(--text-muted);
 }
 
-.housing-media-empty {
+.photo-carousel-empty {
   background: repeating-linear-gradient(45deg, var(--surface-2), var(--surface-2) 10px, var(--surface) 10px, var(--surface) 20px);
 }
 
-.housing-dots {
+/* above the stretched card link (z-index 1), so a click switches the photo instead of opening the listing */
+.photo-carousel-arrow,
+.photo-carousel-dots {
   position: absolute;
+  z-index: 2;
+}
+
+.photo-carousel-arrow {
+  top: 50%;
+  transform: translateY(-50%);
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 50%;
+  background: rgba(15, 13, 34, 0.6);
+  color: #fff;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.15s ease, background 0.15s ease;
+}
+
+.photo-carousel-arrow svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.photo-carousel-arrow--prev {
+  left: 0.5rem;
+}
+
+.photo-carousel-arrow--next {
+  right: 0.5rem;
+}
+
+.photo-carousel:hover .photo-carousel-arrow,
+.photo-carousel-arrow:focus-visible {
+  opacity: 1;
+}
+
+.photo-carousel-arrow:hover {
+  background: rgba(15, 13, 34, 0.85);
+}
+
+/* touch screens have no hover: keep the arrows visible */
+@media (hover: none) {
+  .photo-carousel-arrow {
+    opacity: 1;
+  }
+}
+
+.photo-carousel-dots {
   left: 50%;
   bottom: 0.6rem;
   transform: translateX(-50%);
@@ -1635,7 +1719,7 @@ button[type='submit']:disabled {
   gap: 0.35rem;
 }
 
-.housing-dot {
+.photo-carousel-dot {
   width: 7px;
   height: 7px;
   padding: 0;
@@ -1645,7 +1729,7 @@ button[type='submit']:disabled {
   cursor: pointer;
 }
 
-.housing-dot--active {
+.photo-carousel-dot--active {
   background: #fff;
 }
 
@@ -1779,6 +1863,337 @@ button[type='submit']:disabled {
 
   .housing-grid {
     grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* Housing: toolbar above the results */
+.housing-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 0.9rem;
+}
+
+.segmented {
+  display: inline-flex;
+  padding: 3px;
+  border-radius: var(--radius);
+  background: var(--glass);
+  border: 1px solid var(--border);
+}
+
+.segmented button {
+  font: inherit;
+  font-size: 0.88rem;
+  padding: 0.45rem 0.9rem;
+  border: none;
+  border-radius: 7px;
+  background: transparent;
+  color: var(--text);
+  cursor: pointer;
+}
+
+.segmented button[aria-pressed='true'] {
+  background: var(--accent-bg);
+  color: var(--text-h);
+}
+
+.housing-post-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.housing-post-button svg {
+  width: 17px;
+  height: 17px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.4;
+  stroke-linecap: round;
+}
+
+.housing-filters--off {
+  opacity: 0.45;
+}
+
+/* Shared small bits */
+.back-link {
+  display: inline-block;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  text-decoration: none;
+}
+
+.back-link:hover {
+  color: var(--text-h);
+}
+
+.button-danger {
+  font: inherit;
+  font-weight: 500;
+  padding: 0.65rem 1.3rem;
+  border-radius: var(--radius);
+  border: 1px solid rgba(248, 113, 113, 0.45);
+  background: var(--danger-bg);
+  color: var(--danger);
+  cursor: pointer;
+}
+
+.button-danger:hover:not(:disabled) {
+  border-color: var(--danger);
+}
+
+.button-danger:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.form .field-error {
+  color: var(--danger);
+  font-size: 0.8rem;
+  font-weight: 400;
+}
+
+.field-hint {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+/* Housing: create / edit form */
+.housing-form {
+  max-width: 640px;
+}
+
+.housing-form .form-row > label {
+  min-width: 0;
+}
+
+.form-error ul {
+  margin: 0.4rem 0;
+  padding-left: 1.2rem;
+}
+
+.photo-manager {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 1rem;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.photo-manager legend {
+  padding: 0 0.35rem;
+  font-weight: 500;
+  font-size: 0.92rem;
+  color: var(--text-h);
+}
+
+.photo-grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+  gap: 0.6rem;
+}
+
+.photo-tile {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: var(--bg-deep);
+}
+
+.photo-tile-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: grid;
+  place-items: center;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.photo-tile-remove {
+  position: absolute;
+  top: 0.3rem;
+  right: 0.3rem;
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: rgba(15, 13, 34, 0.75);
+  color: #fff;
+  font-size: 1.1rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.photo-tile-remove:hover {
+  background: var(--danger);
+}
+
+.pending-photos {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.pending-photo {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.3rem 0.6rem;
+  padding: 0.45rem 0.6rem;
+  border-radius: var(--radius);
+  background: var(--surface);
+  font-size: 0.85rem;
+}
+
+.pending-photo--error {
+  background: var(--danger-bg);
+}
+
+.pending-photo-name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--text-h);
+}
+
+.pending-photo-status {
+  color: var(--text-muted);
+  font-size: 0.78rem;
+}
+
+.pending-photo--error .pending-photo-status {
+  color: var(--danger);
+}
+
+.form label.photo-picker {
+  position: relative;
+  flex-direction: row;
+  cursor: pointer;
+}
+
+/* visually hidden, the label is the button */
+.photo-picker input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
+
+.photo-picker:focus-within {
+  box-shadow: var(--focus-ring);
+}
+
+/* Housing: detail page */
+.housing-detail-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  gap: 1.75rem;
+  align-items: start;
+}
+
+.housing-detail-media {
+  aspect-ratio: 16 / 9;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+}
+
+.housing-detail-heading {
+  margin: 1.25rem 0 1.5rem;
+}
+
+.housing-detail-heading h1 {
+  margin: 0.6rem 0 0.4rem;
+  font-size: clamp(1.5rem, 4vw, 2rem);
+  line-height: 1.2;
+  overflow-wrap: anywhere;
+}
+
+.housing-detail-subtitle {
+  font-size: 1.05rem;
+  margin: 0 0 0.6rem;
+}
+
+.housing-detail-content {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.housing-detail-side {
+  position: sticky;
+  top: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.housing-detail-card {
+  padding: 1.1rem 1.2rem;
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  border: 1px solid var(--border);
+}
+
+.housing-detail-card.housing-author {
+  justify-content: flex-start;
+}
+
+.housing-facts {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.45rem 1rem;
+  margin: 1rem 0 0;
+  font-size: 0.9rem;
+}
+
+.housing-facts dt {
+  color: var(--text-muted);
+}
+
+.housing-facts dd {
+  margin: 0;
+  text-align: right;
+  color: var(--text-h);
+}
+
+.housing-detail-actions {
+  display: flex;
+  gap: 0.6rem;
+}
+
+.housing-detail-actions > * {
+  flex: 1;
+  text-align: center;
+}
+
+@media (max-width: 900px) {
+  .housing-detail-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .housing-detail-side {
+    position: static;
   }
 }
 

@@ -13,7 +13,7 @@ const NAV_LINKS = [
   { to: '/dashboard', label: 'Dashboard', match: (path: string) => path === '/dashboard' },
   { to: '/my-guides', label: 'My Guides', match: (path: string) => path === '/my-guides' },
   { to: '/documents', label: 'Documents', match: (path: string) => path === '/documents' },
-  { to: '/housing', label: 'Housing', match: (path: string) => path === '/housing' },
+  { to: '/housing', label: 'Housing', match: (path: string) => path.startsWith('/housing') },
   { to: '/courses', label: 'Courses', match: (path: string) => path === '/courses' },
   { to: '/forum', label: 'Community', match: (path: string) => path.startsWith('/forum') },
 ];

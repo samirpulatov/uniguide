@@ -1,8 +1,9 @@
-import { useEffect, useState, type CSSProperties } from 'react';
+import { useEffect, useMemo, useState, type CSSProperties } from 'react';
+import { Link } from 'react-router-dom';
 import { housingApi, type HousingFilters } from '../api/housing';
 import { extractErrorMessage } from '../api/errors';
 import { HousingCard } from '../components/HousingCard';
-import { CITIES, formatEnumLabel } from '../constants/enumOptions';
+import { CITIES, HOUSE_TYPE_LABELS, HOUSE_TYPES as TYPE_VALUES, formatEnumLabel } from '../constants/enumOptions';
 import type { City, HouseType, HousingResponse } from '../types';
 
 // Slider bounds. A thumb at the outer end means "no limit", so that bound is not sent at all.
@@ -15,10 +16,11 @@ const AREA_STEP = 5;
 
 const HOUSE_TYPES: { value: HouseType | ''; label: string }[] = [
   { value: '', label: 'Any type' },
-  { value: 'WG_ROOM', label: 'WG room' },
-  { value: 'APARTMENT', label: 'Apartment' },
-  { value: 'DORM', label: 'Dorm' },
+  ...TYPE_VALUES.map((value) => ({ value, label: HOUSE_TYPE_LABELS[value] })),
 ];
+
+// "all" = GET /housing with the filters, "mine" = GET /housing/me (the backend has no filters there)
+type Scope = 'all' | 'mine';
 
 interface FilterState {
   city: City | '';
@@ -125,8 +127,11 @@ export function HousingPage() {
   const [filters, setFilters] = useState<FilterState>(DEFAULT_FILTERS);
   // filters wait a moment before the request, so dragging a slider does not fire one request per step
   const [applied, setApplied] = useState<FilterState>(DEFAULT_FILTERS);
+  const [scope, setScope] = useState<Scope>('all');
+  // one object per request, so the result can tell which request it belongs to
+  const query = useMemo(() => ({ scope, filters: applied }), [scope, applied]);
   const [result, setResult] = useState<{
-    filters: FilterState;
+    query: typeof query;
     housings: HousingResponse[];
     error: string | null;
   } | null>(null);
@@ -138,23 +143,24 @@ export function HousingPage() {
 
   useEffect(() => {
     let cancelled = false;
-    housingApi
-      .getAll(toQuery(applied))
+    const request = query.scope === 'mine' ? housingApi.getMine() : housingApi.getAll(toQuery(query.filters));
+    request
       .then((housings) => {
-        if (!cancelled) setResult({ filters: applied, housings, error: null });
+        if (!cancelled) setResult({ query, housings, error: null });
       })
       .catch((err) => {
         if (!cancelled) {
-          setResult({ filters: applied, housings: [], error: extractErrorMessage(err, 'Failed to load housing.') });
+          setResult({ query, housings: [], error: extractErrorMessage(err, 'Failed to load housing.') });
         }
       });
     return () => {
       cancelled = true;
     };
-  }, [applied]);
+  }, [query]);
 
   // the previous results stay on screen (dimmed) while the next request is running
-  const isLoading = result?.filters !== applied;
+  const isLoading = result?.query !== query;
+  const isMine = scope === 'mine';
   const housings = result?.housings ?? [];
   const isDefault = filters === DEFAULT_FILTERS;
 
@@ -203,7 +209,7 @@ export function HousingPage() {
       </section>
 
       <div className="housing-layout">
-        <aside className="housing-filters" aria-label="Filters">
+        <aside className={`housing-filters${isMine ? ' housing-filters--off' : ''}`} aria-label="Filters" inert={isMine}>
           <div className="hf-header">
             <h2>Filters</h2>
             <button type="button" className="hf-reset" onClick={() => setFilters(DEFAULT_FILTERS)} disabled={isDefault}>
@@ -265,17 +271,41 @@ export function HousingPage() {
         </aside>
 
         <section className="housing-results" aria-busy={isLoading}>
+          <div className="housing-toolbar">
+            <div className="segmented" role="group" aria-label="Which listings">
+              <button type="button" aria-pressed={!isMine} onClick={() => setScope('all')}>All listings</button>
+              <button type="button" aria-pressed={isMine} onClick={() => setScope('mine')}>My listings</button>
+            </div>
+            <Link to="/housing/new" className="button-primary housing-post-button">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14" /></svg>
+              Post listing
+            </Link>
+          </div>
+
           <p className="housing-count">
             {result === null
               ? 'Loading places…'
-              : `${housings.length} ${housings.length === 1 ? 'place matches' : 'places match'} your filters`}
+              : isMine
+                ? `You have ${housings.length} ${housings.length === 1 ? 'listing' : 'listings'}`
+                : `${housings.length} ${housings.length === 1 ? 'place matches' : 'places match'} your filters`}
           </p>
 
           {result?.error && <p className="form-error">{result.error}</p>}
           {result && !result.error && housings.length === 0 && (
             <div className="housing-empty">
-              <strong>No places match these filters.</strong>
-              <span>Try a wider price range or another city.</span>
+              {isMine ? (
+                <>
+                  <strong>You haven't posted anything yet.</strong>
+                  <span>
+                    <Link to="/housing/new">Post your first listing</Link> — it takes a minute.
+                  </span>
+                </>
+              ) : (
+                <>
+                  <strong>No places match these filters.</strong>
+                  <span>Try a wider price range or another city.</span>
+                </>
+              )}
             </div>
           )}
 

@@ -14,6 +14,8 @@ import { OnboardingPage } from './pages/OnboardingPage';
 import { DashboardPage } from './pages/DashboardPage';
 import { DocumentsPage } from './pages/DocumentsPage';
 import { HousingPage } from './pages/HousingPage';
+import { HousingDetailPage } from './pages/HousingDetailPage';
+import { HousingFormPage } from './pages/HousingFormPage';
 import { CoursesPage } from './pages/CoursesPage';
 import { ForumPage } from './pages/ForumPage';
 import { ForumThreadPage } from './pages/ForumThreadPage';
@@ -47,6 +49,9 @@ function AppShell() {
             <Route path="/dashboard" element={<DashboardPage />} />
             <Route path="/documents" element={<DocumentsPage />} />
             <Route path="/housing" element={<HousingPage />} />
+            <Route path="/housing/new" element={<HousingFormPage />} />
+            <Route path="/housing/:id" element={<HousingDetailPage />} />
+            <Route path="/housing/:id/edit" element={<HousingFormPage />} />
             <Route path="/courses" element={<CoursesPage />} />
             <Route path="/forum/new" element={<ForumThreadFormPage />} />
             <Route path="/forum/:id/edit" element={<ForumThreadFormPage />} />

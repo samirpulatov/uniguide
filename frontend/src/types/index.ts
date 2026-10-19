@@ -193,7 +193,8 @@ export interface HousingResponse {
   coldRent: number;
   warmRent: number;
   area: number;
-  deposit: number;
+  // optional on the backend (@PositiveOrZero without @NotNull)
+  deposit: number | null;
   city: City;
   postCode: string;
   street: string;
@@ -201,6 +202,20 @@ export interface HousingResponse {
   createdAt: string;
   updatedAt: string | null;
   authorName: string;
+}
+
+// Body of POST /housing and PUT /housing/{id} (PUT replaces the whole listing)
+export interface HousingRequest {
+  houseType: HouseType;
+  title: string;
+  coldRent: number;
+  warmRent: number;
+  area: number;
+  deposit: number | null;
+  city: City;
+  postCode: string;
+  street: string;
+  content: string;
 }
 
 // ---- Housing photos ----

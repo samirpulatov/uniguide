@@ -1,4 +1,4 @@
-// Demo data for the onboarding/documents/housing/courses/forum screens.
+// Demo data for the onboarding/documents/courses screens.
 // These screens have no backend yet — everything here is local/mock state,
 // ported from the UniGuide.dc.html design mockup. Not part of the real API
 // surface (see ../types/index.ts for that).
@@ -45,29 +45,6 @@ export const docGroups: DocGroup[] = [
   },
 ];
 
-export type RoomType = 'Studio' | 'WG/Shared' | 'Dorm';
-export type PriceBand = 'low' | 'mid' | 'high';
-
-export interface HousingListing {
-  id: number;
-  title: string;
-  district: string;
-  price: string;
-  size: string;
-  roomType: RoomType;
-  furnished: boolean;
-  priceBand: PriceBand;
-}
-
-export const housingListings: HousingListing[] = [
-  { id: 1, title: 'Bright studio near TUM campus', district: 'Garching', price: '€650/mo', size: '24m²', roomType: 'Studio', furnished: true, priceBand: 'mid' },
-  { id: 2, title: 'Shared flat room in Kreuzberg', district: 'Berlin-Kreuzberg', price: '€480/mo', size: '16m²', roomType: 'WG/Shared', furnished: true, priceBand: 'mid' },
-  { id: 3, title: 'Modern 1-room apartment', district: 'Berlin-Mitte', price: '€820/mo', size: '32m²', roomType: 'Studio', furnished: false, priceBand: 'high' },
-  { id: 4, title: 'Cozy room in student residence', district: 'Munich-Schwabing', price: '€410/mo', size: '14m²', roomType: 'Dorm', furnished: true, priceBand: 'mid' },
-  { id: 5, title: 'Quiet WG room near RWTH', district: 'Aachen', price: '€390/mo', size: '15m²', roomType: 'WG/Shared', furnished: true, priceBand: 'low' },
-  { id: 6, title: 'Sunny apartment close to the Alster', district: 'Hamburg', price: '€710/mo', size: '28m²', roomType: 'Studio', furnished: true, priceBand: 'high' },
-];
-
 export const weekDays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
 
 export interface ScheduleRow {
@@ -98,40 +75,6 @@ export const courseList: Course[] = [
   { code: 'GEN050', name: 'Seminar: Study Skills', instructor: 'Dr. Reyes', room: 'ZB 0.08', credits: 2 },
 ];
 
-export interface ForumThread {
-  id: number;
-  title: string;
-  category: string;
-  uniTag: string;
-  author: string;
-  replies: number;
-  lastActive: string;
-  excerpt: string;
-  body: string;
-}
-
-export const forumThreads: ForumThread[] = [
-  { id: 1, title: 'Anyone else still waiting on their blocked account confirmation?', category: 'Visa & Documents', uniTag: 'All universities', author: 'Priya S.', replies: 24, lastActive: '2h ago', excerpt: 'Sent mine three weeks ago, still nothing. Curious if this is normal or if I should call.', body: "Sent my blocked account confirmation request three weeks ago and still haven't heard back. Is this normal turnaround time, or should I be calling them directly at this point? Getting a bit nervous with my visa appointment coming up." },
-  { id: 2, title: 'WG hunting in Munich — tips that actually worked', category: 'Housing', uniTag: 'TUM', author: 'Jonas M.', replies: 41, lastActive: '5h ago', excerpt: 'After two months of searching, here is what finally got me replies from landlords.', body: 'After two months of searching, here is what finally got me replies from landlords: a short video intro, being flexible on move-in date, and applying same-day. Sharing in case it helps someone else.' },
-  { id: 3, title: 'TU Berlin Welcome Week 2026 — meetup thread', category: 'Social', uniTag: 'TU Berlin', author: 'Aiko T.', replies: 18, lastActive: '1d ago', excerpt: 'Anyone want to grab coffee before the first orientation session?', body: 'Anyone want to grab coffee before the first orientation session on Monday? Also happy to answer questions if you already arrived — I got here two weeks ago.' },
-  { id: 4, title: 'Anmeldung appointment availability in Berlin', category: 'Visa & Documents', uniTag: 'Berlin universities', author: 'Diego R.', replies: 33, lastActive: '1d ago', excerpt: 'Sharing a trick for finding cancelled slots on the booking portal.', body: 'Sharing a trick for finding cancelled slots on the booking portal — check right after midnight, that is when most cancellations reopen.' },
-  { id: 5, title: 'Dropped Thermodynamics — anyone in the same boat?', category: 'Courses', uniTag: 'RWTH Aachen', author: 'Lena K.', replies: 9, lastActive: '2d ago', excerpt: 'Considering switching sections, wondering how the workload compares.', body: 'Considering switching sections, wondering how the workload compares between the Tuesday and Thursday groups before I decide.' },
-  { id: 6, title: 'Best budget grocery stores near Uni Hamburg', category: 'Social', uniTag: 'Uni Hamburg', author: 'Noor A.', replies: 15, lastActive: '3d ago', excerpt: 'Compiled a short list after a semester of comparing prices.', body: 'Compiled a short list after a semester of comparing prices — happy to share if people want the exact addresses.' },
-];
-
-export interface ForumReply {
-  author: string;
-  time: string;
-  body: string;
-  indent?: number;
-}
-
-export const forumReplies: ForumReply[] = [
-  { author: 'Marta W.', time: '1h ago', body: 'Same here, mine took almost four weeks. It cleared up on its own — try not to worry too much yet.' },
-  { author: 'Ben O.', time: '45m ago', body: "If it's been over four weeks I'd send a follow-up email with your reference number, that usually speeds things up." },
-  { author: 'Priya S.', time: '30m ago', body: 'Thanks both — will give it another week before emailing. Appreciate it.', indent: 28 },
-];
-
 export const universities = [
   'Technical University of Munich (TUM)',
   'Humboldt University of Berlin',
@@ -146,15 +89,3 @@ export const universities = [
 export const germanLevels = ['None / just starting', 'A1–A2 (Beginner)', 'B1–B2 (Intermediate)', 'C1–C2 (Advanced/Fluent)'];
 
 export const statusOptions = ['Prospective applicant', 'Newly enrolled', 'Currently enrolled', 'Exchange / study abroad'];
-
-export function initials(name: string): string {
-  return (
-    name
-      .trim()
-      .split(/\s+/)
-      .map((w) => w[0])
-      .join('')
-      .slice(0, 2)
-      .toUpperCase() || '?'
-  );
-}
