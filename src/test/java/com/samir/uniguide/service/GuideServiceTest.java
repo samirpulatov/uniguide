@@ -11,6 +11,7 @@ import com.samir.uniguide.model.entity.User;
 import com.samir.uniguide.model.enums.City;
 import com.samir.uniguide.model.enums.GuideCategory;
 import com.samir.uniguide.model.enums.GuideStatus;
+import com.samir.uniguide.model.enums.Role;
 import com.samir.uniguide.model.enums.University;
 import com.samir.uniguide.repository.GuideRepository;
 import com.samir.uniguide.repository.UserRepository;
@@ -28,6 +29,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -158,8 +160,8 @@ public class GuideServiceTest {
     }
 
     @Test
-    @DisplayName("Get guide by Id")
-    void getGuideById() {
+    @DisplayName("Guest gets an approved guide without a user lookup")
+    void getGuideById_approved_guest_returnsGuide() {
         //Arrange
         Long id = 1L;
 
@@ -167,7 +169,7 @@ public class GuideServiceTest {
                 buildGuide(id, "Guide Title", "Guide Content", GuideCategory.BUREAUCRACY, GuideStatus.APPROVED, "testUser")));
 
         //Act
-        GuideCreationResponse response = guideService.getGuideById(id);
+        GuideCreationResponse response = guideService.getGuideById(id, null);
 
         //Assert
         assertEquals(1L, response.getId());
@@ -178,6 +180,7 @@ public class GuideServiceTest {
         assertEquals(University.UNI_SIEGEN, response.getUniversity());
         assertEquals("testUser", response.getAuthorName());
         assertEquals(GuideStatus.APPROVED, response.getStatus());
+        verifyNoInteractions(userRepository);
     }
 
     @Test
@@ -188,7 +191,84 @@ public class GuideServiceTest {
         when(guideRepository.findById(id)).thenReturn(Optional.empty());
 
         //Act && Assert
-        assertThrows(ResourceNotFoundException.class, () -> guideService.getGuideById(id));
+        assertThrows(ResourceNotFoundException.class, () -> guideService.getGuideById(id, "testUser"));
+    }
+
+    @Test
+    @DisplayName("Guest gets 404 for a pending guide")
+    void getGuideById_pending_guest_throwsNotFound() {
+        //Arrange
+        Long id = 1L;
+        when(guideRepository.findById(id)).thenReturn(Optional.of(
+                buildGuide(id, "Guide Title", "Guide Content", GuideCategory.BUREAUCRACY, GuideStatus.PENDING, "testUser")));
+
+        //Act && Assert
+        assertThrows(ResourceNotFoundException.class, () -> guideService.getGuideById(id, null));
+        verifyNoInteractions(userRepository);
+    }
+
+    @Test
+    @DisplayName("Author gets own pending guide without a user lookup")
+    void getGuideById_pending_author_returnsGuide() {
+        //Arrange
+        Long id = 1L;
+        when(guideRepository.findById(id)).thenReturn(Optional.of(
+                buildGuide(id, "Guide Title", "Guide Content", GuideCategory.BUREAUCRACY, GuideStatus.PENDING, "testUser")));
+
+        //Act
+        GuideCreationResponse response = guideService.getGuideById(id, "testUser");
+
+        //Assert
+        assertEquals(GuideStatus.PENDING, response.getStatus());
+        verifyNoInteractions(userRepository);
+    }
+
+    @Test
+    @DisplayName("Admin gets someone else's rejected guide incl. the reason")
+    void getGuideById_rejected_admin_returnsGuide() {
+        //Arrange
+        Long id = 1L;
+        Guide guide = buildGuide(id, "Guide Title", "Guide Content", GuideCategory.BUREAUCRACY, GuideStatus.REJECTED, "testUser");
+        guide.setRejectionReason("Too short");
+        User admin = User.builder().username("admin").role(Role.ADMIN).build();
+
+        when(guideRepository.findById(id)).thenReturn(Optional.of(guide));
+        when(userRepository.findByUsername("admin")).thenReturn(Optional.of(admin));
+
+        //Act
+        GuideCreationResponse response = guideService.getGuideById(id, "admin");
+
+        //Assert
+        assertEquals(GuideStatus.REJECTED, response.getStatus());
+        assertEquals("Too short", response.getRejectionReason());
+    }
+
+    @Test
+    @DisplayName("Another student gets 404 for someone else's pending guide")
+    void getGuideById_pending_otherStudent_throwsNotFound() {
+        //Arrange
+        Long id = 1L;
+        User otherStudent = User.builder().username("otherUser").role(Role.STUDENT).build();
+
+        when(guideRepository.findById(id)).thenReturn(Optional.of(
+                buildGuide(id, "Guide Title", "Guide Content", GuideCategory.BUREAUCRACY, GuideStatus.PENDING, "testUser")));
+        when(userRepository.findByUsername("otherUser")).thenReturn(Optional.of(otherStudent));
+
+        //Act && Assert
+        assertThrows(ResourceNotFoundException.class, () -> guideService.getGuideById(id, "otherUser"));
+    }
+
+    @Test
+    @DisplayName("Throw ResourceNotFoundException since the user from the token no longer exists")
+    void getGuideById_pending_unknownUser_throwsNotFound() {
+        //Arrange
+        Long id = 1L;
+        when(guideRepository.findById(id)).thenReturn(Optional.of(
+                buildGuide(id, "Guide Title", "Guide Content", GuideCategory.BUREAUCRACY, GuideStatus.PENDING, "testUser")));
+        when(userRepository.findByUsername("ghost")).thenReturn(Optional.empty());
+
+        //Act && Assert
+        assertThrows(ResourceNotFoundException.class, () -> guideService.getGuideById(id, "ghost"));
     }
 
     @Test

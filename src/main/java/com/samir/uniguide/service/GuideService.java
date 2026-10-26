@@ -8,10 +8,7 @@ import com.samir.uniguide.exception.ForbiddenException;
 import com.samir.uniguide.exception.ResourceNotFoundException;
 import com.samir.uniguide.model.entity.Guide;
 import com.samir.uniguide.model.entity.User;
-import com.samir.uniguide.model.enums.City;
-import com.samir.uniguide.model.enums.GuideCategory;
-import com.samir.uniguide.model.enums.GuideStatus;
-import com.samir.uniguide.model.enums.University;
+import com.samir.uniguide.model.enums.*;
 import com.samir.uniguide.repository.GuideRepository;
 import com.samir.uniguide.repository.GuideSpecification;
 import com.samir.uniguide.repository.UserRepository;
@@ -101,14 +98,33 @@ public class GuideService {
     }
 
     /**
-     * Returns one guide by id, regardless of its status.
+     * Returns one guide by id (backs the public GET /guides/{id}).
+     * An APPROVED guide is visible to everyone, guests included; a PENDING or REJECTED guide
+     * only to its author and to admins. Everyone else gets 404, not 403, so ids of
+     * unpublished guides can't be enumerated.
      *
-     * @param id id of the guide from the URL
+     * @param id       id of the guide from the URL
+     * @param username current user from the JWT, or null for a guest
      * @return the guide
-     * @throws ResourceNotFoundException if the guide does not exist
+     * @throws ResourceNotFoundException if the guide does not exist or the caller may not see it
      */
-    public GuideCreationResponse getGuideById(Long id) {
+    public GuideCreationResponse getGuideById(Long id, String username) {
         Guide guide = guideRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Guide not found"));
+        // the common case: published guides need no user lookup at all
+        if(guide.getGuideStatus() == GuideStatus.APPROVED) {
+            return toResponse(guide);
+        }
+        // same message as "does not exist", so a guest can't tell an unpublished guide from a missing one
+        if(username == null) {
+            throw new ResourceNotFoundException("Guide not found");
+        }
+        if(guide.getAuthor().getUsername().equals(username)) {
+            return toResponse(guide);
+        }
+        User user = userRepository.findByUsername(username).orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        if(user.getRole() != Role.ADMIN) {
+            throw new ResourceNotFoundException("Guide not found");
+        }
         return toResponse(guide);
     }
 

@@ -48,8 +48,9 @@ public class GuideController {
 
     @Operation(summary = "Get a guide by ID")
     @GetMapping("/{id}")
-    public ResponseEntity<GuideCreationResponse> getGuideById(@PathVariable Long id) {
-        return ResponseEntity.ok(guideService.getGuideById(id));
+    public ResponseEntity<GuideCreationResponse> getGuideById(@PathVariable Long id, Authentication authentication) {
+        String username = authentication!=null ? authentication.getName() : null;
+        return ResponseEntity.ok(guideService.getGuideById(id, username));
     }
 
     @Operation(summary = "Create a new guide",security = @SecurityRequirement(name = "bearerAuth"))
