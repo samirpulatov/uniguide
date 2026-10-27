@@ -2,10 +2,15 @@ package com.samir.uniguide.service;
 
 
 import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.Jwts;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
+
+import javax.crypto.SecretKey;
+
+import java.util.Base64;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -25,10 +30,15 @@ public class JwtServiceTest {
     @BeforeEach
     void setUp() {
         jwtService = new JwtService();
+
+        SecretKey testKey = Jwts.SIG.HS256.key().build();
+        String encodedTestKey = Base64.getEncoder().encodeToString(testKey.getEncoded());
+
+
         // @Value does not work without Spring, so we write the private fields via reflection.
         // The secret must be valid Base64 and decode to at least 256 bits, otherwise jjwt rejects it for HMAC-SHA.
         // 1800000 ms = 30 minutes, long enough so the token does not expire during the test.
-        ReflectionTestUtils.setField(jwtService, "SECRET", "GaqKxLyDChILOwlVtLDoV9jWreNDTabtlYlQADHfLwg");
+        ReflectionTestUtils.setField(jwtService, "SECRET", encodedTestKey);
         ReflectionTestUtils.setField(jwtService, "EXPIRATION_TIME", 1800000);
     }
 
