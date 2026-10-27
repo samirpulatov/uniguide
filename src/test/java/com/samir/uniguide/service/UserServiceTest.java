@@ -5,8 +5,8 @@ import com.samir.uniguide.dto.request.UpdateUserRequest;
 import com.samir.uniguide.dto.response.AuthResponse;
 import com.samir.uniguide.dto.response.GetUserResponse;
 import com.samir.uniguide.dto.response.UpdateUserResponse;
+import com.samir.uniguide.exception.BadRequestException;
 import com.samir.uniguide.exception.ConflictException;
-import com.samir.uniguide.exception.InvalidTokenException;
 import com.samir.uniguide.exception.ResourceNotFoundException;
 import com.samir.uniguide.model.entity.User;
 import com.samir.uniguide.repository.RefreshTokenRepository;
@@ -246,8 +246,8 @@ public class UserServiceTest {
     }
 
     @Test
-    @DisplayName("changePassword throws InvalidTokenException")
-    void changePassword_throws_InvalidTokenException() {
+    @DisplayName("changePassword throws BadRequestException")
+    void changePassword_throws_BadRequestException() {
         //Arrange
         String username = "testUser";
 
@@ -259,6 +259,8 @@ public class UserServiceTest {
         when(passwordEncoder.matches(request.getCurrentPassword(), existingUser.getPassword())).thenReturn(false);
 
         //Act && Assert
-        assertThrows(InvalidTokenException.class, () -> userService.changePassword(username, request));
+        assertThrows(BadRequestException.class, () -> userService.changePassword(username, request));
+        verify(passwordEncoder, never()).encode(request.getNewPassword());
+        verify(userRepository, never()).save(existingUser);
     }
 }

@@ -5,8 +5,8 @@ import com.samir.uniguide.dto.request.UpdateUserRequest;
 import com.samir.uniguide.dto.response.AuthResponse;
 import com.samir.uniguide.dto.response.GetUserResponse;
 import com.samir.uniguide.dto.response.UpdateUserResponse;
+import com.samir.uniguide.exception.BadRequestException;
 import com.samir.uniguide.exception.ConflictException;
-import com.samir.uniguide.exception.InvalidTokenException;
 import com.samir.uniguide.exception.ResourceNotFoundException;
 import com.samir.uniguide.model.entity.RefreshToken;
 import com.samir.uniguide.model.entity.User;
@@ -72,7 +72,7 @@ public class UserService {
     public AuthResponse changePassword(String username, ChangePasswordRequest request) {
         User user = userRepository.findByUsername(username).orElseThrow(() -> new ResourceNotFoundException("User not found"));
         if (!passwordEncoder.matches(request.getCurrentPassword(), user.getPassword())) {
-            throw new InvalidTokenException("Invalid current password");
+            throw new BadRequestException("Invalid current password");
         }
         user.setPassword(passwordEncoder.encode(request.getNewPassword()));
         userRepository.save(user);
