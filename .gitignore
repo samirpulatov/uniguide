@@ -40,3 +40,16 @@ build/
 .vscode/
 
 uploads/
+
+### Docs: TODOS.md / BUGS.md / CLAUDE.md stay local, only the READMEs are tracked ###
+!/README.md
+!/README.de.md
+
+### Images (design mockups, screenshots) — app assets are kept ###
+*.png
+*.jpg
+*.jpeg
+*.webp
+*.gif
+!frontend/src/assets/**
+!frontend/public/**
