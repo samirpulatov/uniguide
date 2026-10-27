@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 
+// body for PUT /users/me
 @Getter
 @Setter
 public class UpdateUserRequest {

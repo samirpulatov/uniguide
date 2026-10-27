@@ -1,23 +1,37 @@
 package com.samir.uniguide.service;
 
+import com.samir.uniguide.dto.request.ChangePasswordRequest;
 import com.samir.uniguide.dto.request.UpdateUserRequest;
+import com.samir.uniguide.dto.response.AuthResponse;
 import com.samir.uniguide.dto.response.GetUserResponse;
 import com.samir.uniguide.dto.response.UpdateUserResponse;
+import com.samir.uniguide.exception.BadRequestException;
 import com.samir.uniguide.exception.ConflictException;
 import com.samir.uniguide.exception.ResourceNotFoundException;
+import com.samir.uniguide.model.entity.RefreshToken;
 import com.samir.uniguide.model.entity.User;
+import com.samir.uniguide.repository.RefreshTokenRepository;
 import com.samir.uniguide.repository.UserRepository;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.util.UUID;
+
+// profile read/update and password change
 @Service
 public class UserService {
     private final UserRepository userRepository;
     private final JwtService jwtService;
+    private final PasswordEncoder passwordEncoder;
+    private final RefreshTokenRepository refreshTokenRepository;
 
 
-    public UserService(UserRepository userRepository, JwtService jwtService) {
+    public UserService(UserRepository userRepository, JwtService jwtService, PasswordEncoder passwordEncoder, RefreshTokenRepository refreshTokenRepository) {
         this.userRepository = userRepository;
         this.jwtService = jwtService;
+        this.passwordEncoder = passwordEncoder;
+        this.refreshTokenRepository = refreshTokenRepository;
     }
 
     public GetUserResponse getUser(String username) {
@@ -28,6 +42,8 @@ public class UserService {
 
     public UpdateUserResponse updateUser(String currentUsername, UpdateUserRequest request) {
         User user = userRepository.findByUsername(currentUsername).orElseThrow(()-> new ResourceNotFoundException("User not found"));
+        // only check for conflicts when the value actually changes, otherwise saving your own unchanged
+        // data would incorrectly throw ConflictException against your own existing row
         if(!user.getUsername().equals(request.getUsername()) && userRepository.existsByUsername(request.getUsername())) {
             throw new ConflictException("User with this username already exists");
         }
@@ -43,10 +59,42 @@ public class UserService {
         user.setUniversity(request.getUniversity());
         User savedUser = userRepository.save(user);
 
+        // username is the JWT subject, so if it changed the old access token is now orphaned
+        // (JwtFilter's loadUserByUsername would fail and silently leave the request unauthenticated);
+        // re-issuing here lets the client swap the token in immediately. Refresh token stays valid
+        // since RefreshToken links to User by user_id, not username
         String accessToken = jwtService.generateToken(savedUser.getUsername());
 
         return toUpdateUserResponse(savedUser,accessToken);
     }
+
+
+    public AuthResponse changePassword(String username, ChangePasswordRequest request) {
+        User user = userRepository.findByUsername(username).orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        if (!passwordEncoder.matches(request.getCurrentPassword(), user.getPassword())) {
+            throw new BadRequestException("Invalid current password");
+        }
+        user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+        userRepository.save(user);
+
+        // rotate the refresh token too — a hijacked refresh token shouldn't survive a password change
+        refreshTokenRepository.findByUser((user)).ifPresent(refreshTokenRepository::delete);
+
+        RefreshToken refreshToken = RefreshToken.builder()
+                .token(UUID.randomUUID().toString())
+                .user(user)
+                .expirationDate(LocalDateTime.now().plusDays(7))
+                .build();
+
+        refreshTokenRepository.save(refreshToken);
+
+        return AuthResponse.builder()
+                .accessToken(jwtService.generateToken(user.getUsername()))
+                .refreshToken(refreshToken.getToken())
+                .build();
+
+    }
+
 
     private GetUserResponse toGetUserResponse(User user) {
         return GetUserResponse.builder()

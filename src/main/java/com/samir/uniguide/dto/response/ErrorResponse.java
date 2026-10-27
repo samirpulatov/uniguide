@@ -7,6 +7,7 @@ import lombok.Data;
 
 import java.time.LocalDateTime;
 
+// standard error body returned by GlobalExceptionHandler and the security entry points
 @Builder
 @Data
 @JsonPropertyOrder({"status", "message", "error", "timestamp", "path"})

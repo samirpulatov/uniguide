@@ -1,7 +1,9 @@
 package com.samir.uniguide.controller;
 
 
+import com.samir.uniguide.dto.request.ChangePasswordRequest;
 import com.samir.uniguide.dto.request.UpdateUserRequest;
+import com.samir.uniguide.dto.response.AuthResponse;
 import com.samir.uniguide.dto.response.GetUserResponse;
 import com.samir.uniguide.dto.response.UpdateUserResponse;
 import com.samir.uniguide.service.UserService;
@@ -13,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+// no /users/{id} endpoint exists — users can only view/edit their own profile, resolved from the JWT subject
 @Tag(name = "User", description = "The User API")
 @RestController
 @RequestMapping("/users")
@@ -34,6 +37,12 @@ public class UserController {
     public ResponseEntity<UpdateUserResponse> updateCurrentUser(@Valid @RequestBody UpdateUserRequest request,
                                                                 Authentication authentication) {
         return ResponseEntity.ok(userService.updateUser(authentication.getName(), request));
+    }
+
+    @Operation(summary = "Change current users password", security = @SecurityRequirement(name = "bearerAuth"))
+    @PutMapping("/me/password")
+    public ResponseEntity<AuthResponse> changePassword(@Valid @RequestBody ChangePasswordRequest request, Authentication authentication) {
+        return ResponseEntity.ok(userService.changePassword(authentication.getName(), request));
     }
 
 }

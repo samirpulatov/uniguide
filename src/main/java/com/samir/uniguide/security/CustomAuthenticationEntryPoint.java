@@ -14,6 +14,8 @@ import tools.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.time.LocalDateTime;
 
+// handles 401s for missing/invalid JWTs; runs at the filter level, so it bypasses GlobalExceptionHandler
+// and has to build the ErrorResponse body itself
 @Component
 public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint {
     private final ObjectMapper objectMapper;

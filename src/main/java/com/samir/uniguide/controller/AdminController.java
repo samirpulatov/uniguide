@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+// restricted to ROLE_ADMIN via SecurityConfig's "/admin/**" matcher
 @Tag( name = "Admin", description = "Admin API")
 @RestController
 @AllArgsConstructor

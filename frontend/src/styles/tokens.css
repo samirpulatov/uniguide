@@ -1,0 +1,123 @@
+/* UniGuide — generated from tokens.json */
+:root, [data-theme="light"] {
+  --bg: #f6f5f2;
+  --surface: #ffffff;
+  --sunken: #efedf6;
+  --border: #e2dfe9;
+  --border-strong: #8f8aa6;
+  --text: #45415a;
+  --heading: #17142b;
+  --muted: #676380;
+  --accent: #5a43d6;
+  --accent-hover: #4a34c2;
+  --on-accent: #ffffff;
+  --accent-soft: #ebe7fd;
+  --accent-ink: #4330b8;
+  --highlight: #f2b84b;
+  --on-highlight: #17142b;
+  --success: #1d7348;
+  --success-soft: #e1f3e8;
+  --danger: #b8322a;
+  --danger-soft: #fbe8e6;
+  --warning: #855400;
+  --warning-soft: #fcefd3;
+  --scrim: rgba(18, 16, 36, 0.62);
+  --shadow-sm: 0 1px 2px rgba(23, 20, 43, 0.06);
+  --shadow-md: 0 12px 28px -14px rgba(23, 20, 43, 0.22);
+  /* living background + topic tints */
+  --glass: rgba(255, 255, 255, 0.72);
+  --blob-a: rgba(90, 67, 214, 0.20);
+  --blob-b: rgba(242, 184, 75, 0.26);
+  --blob-c: rgba(140, 120, 255, 0.16);
+  --grid-dot: rgba(23, 20, 43, 0.10);
+  --route: rgba(90, 67, 214, 0.45);
+  --map-land: rgba(90, 67, 214, 0.05);
+  --contour: rgba(90, 67, 214, 0.16);
+  --highlight-soft: #fdf0d5;
+  --highlight-ink: #7a4f00;
+  --mint-soft: #e1f3e8;
+  --mint-ink: #1d7348;
+  --rose-soft: #fbe8ef;
+  --rose-ink: #9b2c5a;
+  color-scheme: light;
+}
+[data-theme="dark"] {
+  --bg: #121024;
+  --surface: #1b1833;
+  --sunken: #24203f;
+  --border: #2c2850;
+  --border-strong: #6c6699;
+  --text: #c4bfdf;
+  --heading: #f4f2fc;
+  --muted: #9c96bf;
+  --accent: #a497ff;
+  --accent-hover: #b8adff;
+  --on-accent: #141127;
+  --accent-soft: #2c2659;
+  --accent-ink: #cbc4ff;
+  --highlight: #f2b84b;
+  --on-highlight: #17142b;
+  --success: #62d197;
+  --success-soft: #163729;
+  --danger: #ff9393;
+  --danger-soft: #3c1c25;
+  --warning: #f2c35a;
+  --warning-soft: #372b10;
+  --scrim: rgba(10, 8, 24, 0.72);
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.35);
+  --shadow-md: 0 12px 28px -14px rgba(0, 0, 0, 0.7);
+  --glass: rgba(27, 24, 51, 0.72);
+  --blob-a: rgba(124, 106, 255, 0.28);
+  --blob-b: rgba(242, 184, 75, 0.14);
+  --blob-c: rgba(90, 67, 214, 0.28);
+  --grid-dot: rgba(244, 242, 252, 0.08);
+  --route: rgba(164, 151, 255, 0.55);
+  --map-land: rgba(164, 151, 255, 0.06);
+  --contour: rgba(164, 151, 255, 0.16);
+  --highlight-soft: #372b10;
+  --highlight-ink: #f2c35a;
+  --mint-soft: #163729;
+  --mint-ink: #62d197;
+  --rose-soft: #3a1a2b;
+  --rose-ink: #ff9ec4;
+  color-scheme: dark;
+}
+:root {
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --space-8: 64px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 18px;
+  --radius-pill: 999px;
+  --font-sans: "Plus Jakarta Sans Variable", "Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  /* text sizes for body copy and UI chrome; headings keep their own sizes below */
+  --fs-2xs: 12px;
+  --fs-xs: 13px;
+  --fs-sm: 14px;
+  --fs-md: 15px;
+  --fs-base: 16px;
+  --fs-lg: 17px;
+  --fs-nav: 16px;
+  --fs-brand: 22px;
+  /* motion */
+  --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --dur-fast: 150ms;
+  --dur-base: 250ms;
+  --dur-slow: 700ms;
+}
+.t-display { font-family: var(--font-sans); font-size: 44px; line-height: 50px; font-weight: 700; letter-spacing: -0.025em; }
+.t-h1 { font-family: var(--font-sans); font-size: 30px; line-height: 36px; font-weight: 700; letter-spacing: -0.02em; }
+.t-h2 { font-family: var(--font-sans); font-size: 20px; line-height: 28px; font-weight: 700; letter-spacing: -0.01em; }
+.t-h3 { font-family: var(--font-sans); font-size: var(--fs-lg); line-height: 24px; font-weight: 650; }
+.t-body-lg { font-family: var(--font-sans); font-size: 18px; line-height: 28px; font-weight: 400; }
+.t-body { font-family: var(--font-sans); font-size: var(--fs-base); line-height: 26px; font-weight: 400; }
+.t-body-sm { font-family: var(--font-sans); font-size: var(--fs-sm); line-height: 21px; font-weight: 500; }
+.t-label { font-family: var(--font-sans); font-size: var(--fs-md); line-height: 22px; font-weight: 600; }
+.t-eyebrow { font-family: var(--font-sans); font-size: var(--fs-xs); line-height: 16px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; }

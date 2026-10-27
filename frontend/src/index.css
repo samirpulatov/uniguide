@@ -1,0 +1,119 @@
+@import './styles/tokens.css';
+@import './styles/ui.css';
+@import './styles/motion.css';
+
+/* Legacy variable names still used by pages outside the redesign (auth, onboarding,
+   forms). They point at the design-system tokens, so both themes work. */
+:root,
+[data-theme] {
+  --text-h: var(--heading);
+  --text-muted: var(--muted);
+  --bg-deep: var(--sunken);
+  --surface-2: var(--sunken);
+  --glass: var(--surface);
+  --input-bg: var(--surface);
+  --accent-bg: var(--accent-soft);
+  --accent-border: var(--accent);
+  --accent-strong: var(--accent);
+  --success-bg: var(--success-soft);
+  --danger-bg: var(--danger-soft);
+  --warning-bg: var(--warning-soft);
+  --shadow: var(--shadow-sm);
+  --radius: var(--radius-md);
+  --focus-ring: 0 0 0 3px var(--accent-soft);
+  --sans: var(--font-sans);
+}
+
+:root {
+  font: 400 var(--fs-base)/1.6 var(--font-sans);
+  color: var(--text);
+  background: var(--bg);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100svh;
+  background: var(--bg);
+  overflow-x: clip;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+::placeholder {
+  color: var(--muted);
+  opacity: 1;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+::selection {
+  background: var(--accent-soft);
+  color: var(--accent-ink);
+}
+
+#root {
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+}
+
+h1, h2, h3 {
+  font-family: var(--font-sans);
+  color: var(--heading);
+}
+
+h1 {
+  font-size: 30px;
+  line-height: 36px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin: 0 0 8px;
+}
+
+h2 {
+  font-size: 20px;
+  line-height: 28px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  margin: 24px 0 12px;
+}
+
+h3 {
+  font-size: var(--fs-lg);
+  line-height: 24px;
+  font-weight: 650;
+  margin: 0;
+}
+
+p {
+  margin: 0;
+}
+
+a {
+  color: var(--accent);
+  text-underline-offset: 3px;
+}
+
+a:hover {
+  color: var(--accent-hover);
+}
+
+button {
+  font: inherit;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    transition: none !important;
+  }
+}

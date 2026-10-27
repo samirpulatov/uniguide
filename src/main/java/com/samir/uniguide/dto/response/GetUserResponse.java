@@ -12,6 +12,8 @@ import lombok.Setter;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+// returned by GET /users/me; @JsonPropertyOrder pins field order since Jackson's reflection-based
+// serialization doesn't preserve declaration order on its own
 @Getter
 @Setter
 @Builder

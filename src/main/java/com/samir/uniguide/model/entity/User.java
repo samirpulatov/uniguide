@@ -22,10 +22,12 @@ import java.util.UUID;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+// implements UserDetails directly so Spring Security can authenticate against this entity without a separate wrapper
 @Table(name = "users")
 public class User implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
+        // role is stored as e.g. "ROLE_ADMIN" and checked via hasAuthority("ROLE_ADMIN")
         return List.of(new SimpleGrantedAuthority("ROLE_"+role.name()));
     }
 
@@ -67,6 +69,7 @@ public class User implements UserDetails {
     @Column(nullable = false)
     private Role role;
 
+    // optional; meant to drive frontend personalization (e.g. pre-fill GET /guides?city=...), no server-side auto-filtering
     @Enumerated(EnumType.STRING)
     private City city;
 

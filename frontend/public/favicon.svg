@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#8466f7"/>
+      <stop offset="1" stop-color="#5134d0"/>
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="15" fill="url(#bg)"/>
+  <!-- the same U as components/LogoMark.tsx, scaled into the tile -->
+  <g transform="translate(12 12) scale(0.625)">
+    <path fill="#ffffff" d="M10 5l16 3v26c0 7.2 2.8 11 7 11s7-3.8 7-11V13c0-4.6 5-8 14-9v30c0 14.4-9.4 24-22 24S10 48.4 10 34Z"/>
+    <path fill="#cfc3ff" d="M54 26v8c0 14.4-9.4 24-22 24-3.6 0-7-.8-10-2.3C35.5 55 47.5 45 54 26Z"/>
+  </g>
+</svg>

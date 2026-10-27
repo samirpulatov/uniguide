@@ -1,0 +1,83 @@
+import { BrowserRouter, Route, Routes, useLocation } from 'react-router-dom';
+import { AuthProvider } from './context/AuthContext';
+import { ProtectedRoute } from './components/ProtectedRoute';
+import { Navbar } from './components/Navbar';
+import { LivingBackground } from './components/LivingBackground';
+import { GuidesPage } from './pages/GuidesPage';
+import { GuideDetailPage } from './pages/GuideDetailPage';
+import { GuideFormPage } from './pages/GuideFormPage';
+import { MyGuidesPage } from './pages/MyGuidesPage';
+import { ProfilePage } from './pages/ProfilePage';
+import { AdminGuidesPage } from './pages/AdminGuidesPage';
+import { LoginPage } from './pages/LoginPage';
+import { RegisterPage } from './pages/RegisterPage';
+import { OnboardingPage } from './pages/OnboardingPage';
+import { DashboardPage } from './pages/DashboardPage';
+import { HousingPage } from './pages/HousingPage';
+import { HousingDetailPage } from './pages/HousingDetailPage';
+import { HousingFormPage } from './pages/HousingFormPage';
+import { JobsPage } from './pages/JobsPage';
+import { JobDetailPage } from './pages/JobDetailPage';
+import { JobFormPage } from './pages/JobFormPage';
+import { ForumPage } from './pages/ForumPage';
+import { ForumThreadPage } from './pages/ForumThreadPage';
+import { ForumThreadFormPage } from './pages/ForumThreadFormPage';
+import './App.css';
+
+function AppShell() {
+  const location = useLocation();
+  const hideNav = location.pathname === '/onboarding';
+
+  return (
+    <>
+      <LivingBackground variant={location.pathname === '/' ? 'home' : 'page'} />
+      {!hideNav && <Navbar />}
+      <main className="app-content">
+        <Routes>
+          <Route path="/" element={<GuidesPage />} />
+          <Route path="/guides/:id" element={<GuideDetailPage />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<RegisterPage />} />
+          {/* reading the forum is public on the backend; posting needs a login */}
+          <Route path="/forum" element={<ForumPage />} />
+          <Route path="/forum/:id" element={<ForumThreadPage />} />
+          {/* job vacancies are public to read, too; posting needs a login */}
+          <Route path="/jobs" element={<JobsPage />} />
+          <Route path="/jobs/:id" element={<JobDetailPage />} />
+
+          <Route element={<ProtectedRoute />}>
+            <Route path="/guides/new" element={<GuideFormPage />} />
+            <Route path="/guides/:id/edit" element={<GuideFormPage />} />
+            <Route path="/my-guides" element={<MyGuidesPage />} />
+            <Route path="/profile" element={<ProfilePage />} />
+
+            <Route path="/onboarding" element={<OnboardingPage />} />
+            <Route path="/dashboard" element={<DashboardPage />} />
+            <Route path="/housing" element={<HousingPage />} />
+            <Route path="/housing/new" element={<HousingFormPage />} />
+            <Route path="/housing/:id" element={<HousingDetailPage />} />
+            <Route path="/housing/:id/edit" element={<HousingFormPage />} />
+            <Route path="/jobs/new" element={<JobFormPage />} />
+            <Route path="/jobs/:id/edit" element={<JobFormPage />} />
+            <Route path="/forum/new" element={<ForumThreadFormPage />} />
+            <Route path="/forum/:id/edit" element={<ForumThreadFormPage />} />
+          </Route>
+
+          <Route element={<ProtectedRoute requiredRole="ADMIN" />}>
+            <Route path="/admin" element={<AdminGuidesPage />} />
+          </Route>
+        </Routes>
+      </main>
+    </>
+  );
+}
+
+export default function App() {
+  return (
+    <BrowserRouter>
+      <AuthProvider>
+        <AppShell />
+      </AuthProvider>
+    </BrowserRouter>
+  );
+}

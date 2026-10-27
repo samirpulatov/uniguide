@@ -13,6 +13,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+// signs/parses the JWT access token (HMAC, jjwt 0.13); refresh tokens are handled separately in AuthService/RefreshToken
 @Service
 public class JwtService {
     @Value("${jwt.secret}")
@@ -21,7 +22,7 @@ public class JwtService {
     @Value("${jwt.expiration}")
     private long EXPIRATION_TIME;
 
-    // Use username as JWT subject
+    // Use username as a JWT subject
     public String generateToken(String username) {
         Map<String, Object> claims = new HashMap<>();
 

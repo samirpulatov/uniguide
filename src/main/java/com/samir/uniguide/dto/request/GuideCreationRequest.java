@@ -8,6 +8,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 
+// body for creating/updating a guide; used by both POST /guides and PUT /guides/{id}
 @Data
 public class GuideCreationRequest {
     @NotBlank
@@ -19,6 +20,7 @@ public class GuideCreationRequest {
     @NotNull
     private GuideCategory guideCategory;
 
+    // optional: general guides (e.g. how to open a bank account) have neither
     private City city;
 
     private University university;

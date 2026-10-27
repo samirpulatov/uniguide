@@ -13,6 +13,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+// fully public — see SecurityConfig's "/auth/**" permitAll() matcher
 @Tag(name = "Authentication", description = "Register, login and refresh JWT tokens")
 @RestController
 @AllArgsConstructor

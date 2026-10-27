@@ -8,7 +8,9 @@ import com.samir.uniguide.model.enums.GuideStatus;
 import com.samir.uniguide.model.enums.University;
 import org.springframework.data.jpa.domain.Specification;
 
+// static predicates for GET /guides?city=&category=&university=, applied at the DB level; null params are ignored
 public class GuideSpecification {
+    // unlike the other predicates, always applied (never null) — public listing only ever wants APPROVED
     public static Specification<Guide> hasStatus(GuideStatus status) {
         return (root, query, cb) -> cb.equal(root.get("guideStatus"), status);
     }
@@ -25,7 +27,7 @@ public class GuideSpecification {
 
     public static Specification<Guide> hasCategory(GuideCategory category) {
         return (root, query, cb) ->
-                category == null ? null : cb.equal(root.get("category"), category);
+                category == null ? null : cb.equal(root.get("guideCategory"), category);
     }
 
 
