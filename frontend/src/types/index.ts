@@ -135,7 +135,8 @@ export interface ForumThreadRequest {
 
 export interface ForumReplyResponse {
   id: number;
-  authorName: string;
+  // null when the reply is deleted — the backend hides who wrote it
+  authorName: string | null;
   content: string;
   createdAt: string;
   updatedAt: string | null;

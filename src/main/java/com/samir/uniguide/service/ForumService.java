@@ -196,7 +196,7 @@ public class ForumService {
     private ForumReplyResponse toForumReplyResponse(ForumReply thread) {
         return ForumReplyResponse.builder()
                 .id(thread.getId())
-                .authorName(thread.getAuthor().getUsername())
+                .authorName(thread.isDeleted() ? null : thread.getAuthor().getUsername())
                 .content(thread.getContent())
                 .createdAt(thread.getCreatedAt())
                 .updatedAt(thread.getUpdatedAt())

@@ -40,7 +40,7 @@ export function ForumReplyItem({ reply, depth, currentUsername, onReply, onDelet
     <div className={depth > 0 && depth <= MAX_INDENT_DEPTH ? 'reply-children' : undefined}>
       <div className={`reply rise${reply.deleted ? ' reply--deleted' : ''}`}>
         <span className="avatar avatar--sm" aria-hidden="true">
-          {reply.deleted ? '–' : initialsOf(reply.authorName)}
+          {reply.authorName === null ? '–' : initialsOf(reply.authorName)}
         </span>
         <div className="reply-main">
           <div className="reply-meta">

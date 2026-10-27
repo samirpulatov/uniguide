@@ -325,6 +325,36 @@ public class ForumServiceTest {
     }
 
     @Test
+    @DisplayName("Get thread by id: deleted reply hides its author, its children keep theirs")
+    void getThreadById_deletedReplyHidesAuthor() {
+        //Arrange
+        // tree:
+        //   r1 (deleted)
+        //   └── r2
+        User user = buildUser(AUTHOR);
+        ForumThread thread = buildThread(1L, user);
+        ForumReply r1 = buildReply(1L, thread, null, user);
+        r1.setDeleted(true);
+        ForumReply r2 = buildReply(2L, thread, r1, user);
+
+        when(forumThreadRepository.findById(1L)).thenReturn(Optional.of(thread));
+        when(forumReplyRepository.findByThreadOrderByCreatedAtAsc(thread)).thenReturn(List.of(r1, r2));
+
+        //Act
+        ForumThreadResponse response = forumService.getThreadById(1L);
+
+        //Assert
+        ForumReplyResponse deleted = response.getReplies().getFirst();
+        assertTrue(deleted.isDeleted());
+        assertNull(deleted.getAuthorName());
+
+        // the child is not deleted, so its author is still shown
+        ForumReplyResponse child = deleted.getReplies().getFirst();
+        assertFalse(child.isDeleted());
+        assertEquals(AUTHOR, child.getAuthorName());
+    }
+
+    @Test
     @DisplayName("Get thread by id: thread not found -> ResourceNotFoundException")
     void getThreadById_notFound() {
         //Arrange
